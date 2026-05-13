@@ -1336,15 +1336,24 @@ function refreshMap(){
     document.getElementById('mapLegend').innerHTML='<span style="font-size:.78rem;color:var(--mid);font-style:italic">No mapped locations for this day yet.</span>';
     updateGMapsLink([]);return;
   }
-  const base='https://www.google.com/maps/embed/v1/directions';
-  const key='AIzaSyD-9tSrke72PlusBe-Kyw6X0SuDFQK07EE';
-  const origin=encodeURIComponent(locs[0].addr);
-  const dest=encodeURIComponent(locs[locs.length-1].addr);
-  const waypts=locs.slice(1,-1).map(l=>encodeURIComponent(l.addr)).join('|');
-  let src=base+'?key='+key+'&origin='+origin+'&destination='+dest+'&mode=driving';
-  if(waypts) src+='&waypoints='+waypts;
-  document.getElementById('mapLoader').classList.remove('hidden');
-  document.getElementById('mapFrame').src=src;
+  // Provide your own restricted Google Maps API key:
+  // Get one free at console.cloud.google.com → APIs & Services → Credentials
+  // Restrict it to your GitHub Pages domain for safety.
+  const MAPS_KEY = window.MAPS_API_KEY || '';
+  if(MAPS_KEY){
+    const base='https://www.google.com/maps/embed/v1/directions';
+    const origin=encodeURIComponent(locs[0].addr);
+    const dest=encodeURIComponent(locs[locs.length-1].addr);
+    const waypts=locs.slice(1,-1).map(l=>encodeURIComponent(l.addr)).join('|');
+    let src=base+'?key='+MAPS_KEY+'&origin='+origin+'&destination='+dest+'&mode=driving';
+    if(waypts) src+='&waypoints='+waypts;
+    document.getElementById('mapLoader').classList.remove('hidden');
+    document.getElementById('mapFrame').src=src;
+  } else {
+    // Fallback: OpenStreetMap (no API key needed) — centered on Portland
+    document.getElementById('mapLoader').classList.remove('hidden');
+    document.getElementById('mapFrame').src='https://www.openstreetmap.org/export/embed.html?bbox=-122.78%2C45.43%2C-122.55%2C45.60&layer=mapnik&marker=45.5231%2C-122.6765';
+  }
   const legend=document.getElementById('mapLegend');
   const days=[...new Set(locs.map(l=>l.day))];
   const dayNames={thu:'Thursday',fri:'Friday',sat:'Saturday',sun:'Sunday',mon:'Monday'};
