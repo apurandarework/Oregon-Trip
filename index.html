@@ -1,6 +1,107 @@
 <!-- SEARCH THIS ENTIRE FILE FOR THIS MARKER TO VERIFY DEPLOY -->
 <!-- oregon-trip-itin-v4 -->
+<script>
+/* OLD SITE SPEED FIXES — KEEP DESIGN, MAKE IT FASTER */
+(function () {
+  // 1. Lazy-load attraction images
+  document.querySelectorAll(".card-img img").forEach((img, index) => {
+    img.setAttribute("loading", index < 2 ? "eager" : "lazy");
+    img.setAttribute("decoding", "async");
 
+    if (index < 2) {
+      img.setAttribute("fetchpriority", "high");
+    } else {
+      img.setAttribute("fetchpriority", "low");
+    }
+  });
+
+  // 2. Prioritize hero image only
+  const heroImg = document.querySelector(".hero-media img");
+  if (heroImg) {
+    heroImg.setAttribute("loading", "eager");
+    heroImg.setAttribute("fetchpriority", "high");
+    heroImg.setAttribute("decoding", "async");
+  }
+
+  // 3. Stop map from loading until Plan page opens
+  const mapFrame = document.getElementById("mapFrame");
+  if (mapFrame) {
+    mapFrame.dataset.originalSrc = mapFrame.getAttribute("src") || "about:blank";
+    mapFrame.setAttribute("src", "about:blank");
+  }
+
+  const oldShowPage = window.showPage;
+  window.showPage = function (id) {
+    oldShowPage(id);
+
+    if (id === "itinerary") {
+      setTimeout(() => {
+        if (typeof refreshMap === "function") refreshMap();
+      }, 250);
+    }
+  };
+
+  // 4. Better image fallback without attaching 30+ listeners
+  document.addEventListener(
+    "error",
+    function (e) {
+      const img = e.target;
+      if (!img.matches || !img.matches(".card-img img")) return;
+
+      const FB = {
+        "Japanese Garden":
+          "https://images.unsplash.com/photo-1614091369078-8a1ade08b99a?auto=format&fit=crop&w=700&q=80",
+        OMSI:
+          "https://images.unsplash.com/photo-1532094349884-543559059a5e?auto=format&fit=crop&w=700&q=80",
+        "Pittock Mansion":
+          "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=700&q=80",
+        "Lan Su Garden":
+          "https://images.unsplash.com/photo-1526481280693-3bfa7568e0f3?auto=format&fit=crop&w=700&q=80",
+        "Dinner Cruise":
+          "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=700&q=80",
+        "Willamette Valley":
+          "https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?auto=format&fit=crop&w=700&q=80",
+        "Portland food carts":
+          "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=700&q=80"
+      };
+
+      const fallback = FB[img.alt];
+      if (fallback && img.src !== fallback) img.src = fallback;
+    },
+    true
+  );
+
+  // 5. Fix filter status display bug
+  const filterStatus = document.getElementById("filterStatus");
+  if (filterStatus) {
+    filterStatus.style.display = "none";
+    filterStatus.style.alignItems = "center";
+    filterStatus.style.gap = ".8rem";
+  }
+
+  // 6. Add fast rendering CSS dynamically
+  const style = document.createElement("style");
+  style.textContent = `
+    .card {
+      content-visibility: auto;
+      contain-intrinsic-size: 430px;
+    }
+
+    .card-img {
+      background: #e8e4dc;
+    }
+
+    .card-img img {
+      background: #e8e4dc;
+    }
+
+    #mapFrame {
+      min-height: 440px;
+    }
+  `;
+  document.head.appendChild(style);
+})();
+</script>
 <!DOCTYPE html>
 <html lang="en">
 <head>
