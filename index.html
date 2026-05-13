@@ -1,1424 +1,375 @@
-<!-- redeploy trigger -->
-<!doctype html>
+<!-- SEARCH THIS ENTIRE FILE FOR THIS MARKER TO VERIFY DEPLOY -->
+<!-- oregon-trip-itin-v4 -->
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Oregon Trip</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Instrument+Serif:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+<title>Oregon Trip 2026</title>
+
+<meta name="description" content="Interactive Oregon road trip planner with itinerary, attractions, food, packing checklist, and maps." />
+
 <style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --ink:#0d0d0d;--sand:#f2ede6;--white:#fafaf8;
-  --mid:#888;--border:rgba(13,13,13,.1);--r:20px;
-}
-html{scroll-behavior:smooth}
-body{font-family:'DM Sans',sans-serif;background:var(--sand);color:var(--ink);overflow-x:hidden;-webkit-font-smoothing:antialiased}
-::-webkit-scrollbar{width:4px}
-::-webkit-scrollbar-thumb{background:var(--ink);border-radius:99px}
-
-/* NAV */
-nav{position:fixed;top:0;left:0;right:0;z-index:300;height:54px;display:flex;align-items:center;justify-content:space-between;padding:0 2rem;background:rgba(242,237,230,.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--border)}
-.nav-logo{font-family:'Bebas Neue',sans-serif;font-size:1.2rem;letter-spacing:.14em;color:var(--ink);text-decoration:none;cursor:pointer}
-.nav-links{list-style:none;display:flex;gap:0}
-.nav-links li a{display:block;text-decoration:none;font-size:.72rem;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--mid);padding:.3rem .8rem;border-radius:999px;transition:all .18s}
-.nav-links li a:hover{color:var(--ink)}
-.nav-links li a.active{color:var(--ink);background:rgba(13,13,13,.07)}
-
-/* PAGES */
-.page{display:none;min-height:100vh}
-.page.active{display:block}
-
-/* PAGE TRANSITIONS */
-.page{animation:none}
-.page.animating{animation:pageIn .15s ease}
-@keyframes pageIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
-
-/* SHARED */
-.wrap{max-width:1180px;margin:0 auto;padding:5rem 2rem}
-.sec-label{font-size:.65rem;font-weight:500;letter-spacing:.16em;text-transform:uppercase;color:var(--mid);margin-bottom:.55rem}
-.sec-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(2.4rem,5vw,3.8rem);letter-spacing:.04em;line-height:.92;color:var(--ink);margin-bottom:2.5rem}
-.sec-title em{font-family:'Instrument Serif',serif;font-style:italic;font-size:1.08em;letter-spacing:-.01em}
-
-/* HERO */
-.hero{min-height:100svh;display:grid;grid-template-rows:1fr auto;padding-top:54px;position:relative;overflow:hidden;background:#0d0d0d}
-.hero-media{position:absolute;inset:0}
-.hero-media img{width:100%;height:100%;object-fit:cover;filter:brightness(.48) saturate(.85);display:block}
-.hero-inner{position:relative;z-index:2;display:flex;flex-direction:column;justify-content:flex-end;padding:0 2.5rem;min-height:calc(100svh - 54px - 76px)}
-.hero-kicker{display:inline-flex;align-items:center;gap:.6rem;font-size:.68rem;font-weight:500;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.45);margin-bottom:1.1rem;opacity:0;animation:up .6s .1s forwards}
-.hero-kicker span{display:inline-block;width:22px;height:1px;background:rgba(255,255,255,.3)}
-.hero h1{font-family:'Bebas Neue',sans-serif;font-size:clamp(5rem,14vw,11rem);line-height:.88;letter-spacing:.02em;color:#fff;margin-bottom:1.8rem;opacity:0;animation:up .7s .22s forwards}
-.hero h1 em{font-family:'Instrument Serif',serif;font-style:italic;color:rgba(255,255,255,.5);letter-spacing:-.01em}
-.hero-meta{display:flex;align-items:center;gap:2rem;flex-wrap:wrap;padding-bottom:2.5rem;opacity:0;animation:up .6s .38s forwards}
-.hmi-label{font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.35)}
-.hmi-val{font-size:.9rem;font-weight:500;color:rgba(255,255,255,.8);margin-top:.1rem}
-.hero-sep{width:1px;height:26px;background:rgba(255,255,255,.12)}
-.hero-bottom{position:relative;z-index:2;border-top:1px solid rgba(255,255,255,.08);display:flex}
-.hs{flex:1;padding:1rem 1.4rem;border-right:1px solid rgba(255,255,255,.08);opacity:0;animation:up .5s .5s forwards}
-.hs:last-child{border-right:none}
-.hs-n{font-family:'Bebas Neue',sans-serif;font-size:2rem;letter-spacing:.04em;color:#fff;line-height:1}
-.hs-l{font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.3);margin-top:.15rem}
-@keyframes up{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
-
-/* HOME QUICK NAV */
-.quick-nav{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;margin-top:2rem}
-.qn-item{background:var(--white);padding:2rem 1.5rem;cursor:pointer;transition:background .18s;display:flex;flex-direction:column;gap:.4rem}
-.qn-item:hover{background:var(--sand)}
-.qn-icon{font-size:1.6rem}
-.qn-label{font-size:.6rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--mid)}
-.qn-name{font-family:'Bebas Neue',sans-serif;font-size:1.35rem;letter-spacing:.04em;color:var(--ink)}
-.qn-arrow{font-size:.8rem;color:var(--mid);margin-top:.2rem}
-
-/* STAY */
-#page-stay{background:var(--sand)}
-.stay-layout{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);border:1px solid var(--border);border-radius:var(--r);overflow:hidden}
-.stay-left{background:var(--ink);padding:2.4rem;color:#fff;position:relative;overflow:hidden}
-.stay-left::after{content:'';position:absolute;bottom:-70px;right:-70px;width:200px;height:200px;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.04),transparent 65%);pointer-events:none}
-.stay-eyebrow{font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:.4rem}
-.stay-name{font-family:'Bebas Neue',sans-serif;font-size:2.1rem;letter-spacing:.06em;color:#fff;margin-bottom:.2rem}
-.stay-addr{font-size:.78rem;color:rgba(255,255,255,.28);margin-bottom:1.3rem;font-style:italic}
-.stay-desc{font-size:.88rem;color:rgba(255,255,255,.5);line-height:1.7;font-weight:300}
-.stay-dates{display:flex;gap:2rem;margin-top:2rem;padding-top:1.4rem;border-top:1px solid rgba(255,255,255,.07)}
-.sd-l{font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.28)}
-.sd-v{font-family:'Bebas Neue',sans-serif;font-size:1.25rem;letter-spacing:.06em;color:#fff;margin-top:.15rem}
-.stay-right{background:var(--white);display:flex;flex-direction:column}
-.stay-rule{flex:1;padding:1.5rem 2rem;border-bottom:1px solid var(--border);display:flex;gap:.9rem;align-items:flex-start}
-.stay-rule:last-child{border-bottom:none}
-.sr-icon{font-size:1.3rem;flex-shrink:0;margin-top:.05rem}
-.sr-title{font-family:'Bebas Neue',sans-serif;font-size:.95rem;letter-spacing:.07em;color:var(--ink);margin-bottom:.2rem}
-.sr-body{font-size:.81rem;color:var(--mid);line-height:1.55}
-
-/* CAR */
-#page-car{background:var(--white)}
-.car-row{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:var(--r);overflow:hidden}
-.ct{background:var(--white);padding:2rem;transition:background .18s}
-.ct:hover{background:var(--sand)}
-.ct-icon{font-size:1.5rem;margin-bottom:.8rem;display:block}
-.ct-label{font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:var(--mid);margin-bottom:.25rem}
-.ct-val{font-family:'Bebas Neue',sans-serif;font-size:1.75rem;letter-spacing:.04em;color:var(--ink)}
-.ct-sub{font-size:.78rem;color:var(--mid);margin-top:.15rem}
-
-/* ATTRACTIONS */
-#page-explore{background:var(--sand)}
-.filter-shell{background:var(--white);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;margin-bottom:2rem}
-.fs{padding:.85rem 1.2rem;border-bottom:1px solid var(--border)}
-.fs:last-child{border-bottom:none}
-.fs-lbl{font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;color:var(--mid);margin-bottom:.5rem;display:block}
-.fp-row{display:flex;gap:.35rem;flex-wrap:wrap}
-.fp{padding:.28rem .8rem;border-radius:999px;border:1px solid var(--border);background:transparent;color:var(--mid);font-size:.72rem;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .16s;white-space:nowrap}
-.fp:hover{border-color:var(--ink);color:var(--ink)}
-.fp.on{background:var(--ink);color:#fff;border-color:var(--ink)}
-.no-r{display:none;text-align:center;padding:3rem;color:var(--mid);grid-column:1/-1;font-style:italic;font-size:.88rem}
-.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:1px;background:var(--border);border:1px solid var(--border);border-radius:var(--r);overflow:hidden}
-.card{background:var(--white);display:flex;flex-direction:column;transition:background .18s;position:relative}
-.card:hover{background:var(--sand)}
-.card.hidden{display:none}
-.card-drag-handle{position:absolute;top:.75rem;left:.75rem;z-index:3;width:28px;height:28px;border-radius:6px;background:rgba(13,13,13,.72);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;font-size:.7rem;color:#fff;cursor:grab;opacity:0;transition:opacity .18s;border:1px solid rgba(255,255,255,.15);user-select:none}
-.card:hover .card-drag-handle{opacity:1}
-.card.card-dragging{opacity:.45;transform:scale(.97)}
-.card-img{height:210px;overflow:hidden;position:relative;display:block}
-.card-img img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .45s}
-.card:hover .card-img img{transform:scale(1.04)}
-.card-time{position:absolute;bottom:.7rem;left:.7rem;font-size:.6rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding:.22rem .6rem;border-radius:999px;background:rgba(13,13,13,.7);backdrop-filter:blur(6px);color:#fff;border:1px solid rgba(255,255,255,.1)}
-.card-time.ct-morning{background:rgba(180,100,0,.82);border-color:rgba(255,200,80,.25)}
-.card-time.ct-afternoon{background:rgba(30,90,50,.82);border-color:rgba(100,220,120,.25)}
-.card-time.ct-evening{background:rgba(60,40,110,.82);border-color:rgba(160,130,255,.25)}
-.card-time.ct-full{background:rgba(10,60,100,.82);border-color:rgba(100,180,255,.25)}
-.card-body{padding:1.3rem;flex:1;display:flex;flex-direction:column}
-.card-cat{font-size:.6rem;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--mid);margin-bottom:.35rem}
-.card-body h3{font-family:'Bebas Neue',sans-serif;font-size:1.3rem;letter-spacing:.04em;color:var(--ink);margin-bottom:.45rem;line-height:1.05}
-.card-body p{font-size:.82rem;color:var(--mid);line-height:1.65;flex:1;font-weight:300}
-.card-info{margin-top:.95rem;padding-top:.85rem;border-top:1px solid var(--border);display:flex;flex-direction:column;gap:.27rem}
-.ci{display:flex;align-items:flex-start;gap:.45rem;font-size:.76rem;color:var(--ink);line-height:1.45}
-.ci-i{flex-shrink:0;width:13px;text-align:center;opacity:.55;margin-top:.05rem}
-.tag-free{background:#dff0e4;color:#1a5c35;font-size:.6rem;padding:.08rem .42rem;border-radius:3px;font-weight:600;display:inline-block}
-.tag-trek{background:#fde8dc;color:#8c2a0a;font-size:.6rem;padding:.08rem .42rem;border-radius:3px;font-weight:600;display:inline-block}
-.card-stars{font-size:.7rem;color:var(--mid);margin-top:.55rem;font-style:italic}
-/* card action links */
-.card-links{display:flex;gap:.5rem;margin-top:.9rem;padding-top:.8rem;border-top:1px solid var(--border);flex-wrap:wrap}
-.card-link{display:inline-flex;align-items:center;gap:.3rem;font-size:.7rem;font-weight:600;letter-spacing:.04em;color:var(--mid);text-decoration:none;padding:.28rem .7rem;border-radius:999px;border:1px solid var(--border);transition:all .16s;white-space:nowrap}
-.card-link:hover{background:var(--ink);color:#fff;border-color:var(--ink)}
-.card-link svg{width:11px;height:11px;flex-shrink:0}
-
-/* ITINERARY */
-#page-itinerary{background:var(--white)}
-.itin-hint{font-size:.75rem;color:var(--mid);margin-bottom:1.8rem;font-style:italic;display:block}
-.itin-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:var(--r);overflow:hidden}
-.day-col{background:var(--white);padding:.9rem;min-height:180px;min-width:160px;transition:background .15s;display:flex;flex-direction:column}
-.day-col.drag-over{background:#f7f3ed}
-.day-head{margin-bottom:.85rem;padding-bottom:.65rem;border-bottom:1px solid var(--border)}
-.day-date{font-size:.58rem;letter-spacing:.12em;text-transform:uppercase;color:var(--mid);margin-bottom:.12rem}
-.day-name{font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:.06em;color:var(--ink)}
-.ic{background:var(--sand);border:1px solid var(--border);border-radius:9px;padding:.58rem .72rem;margin-bottom:.48rem;cursor:grab;user-select:none;transition:box-shadow .15s,transform .15s;position:relative}
-.ic:active{cursor:grabbing}
-.ic.dragging{opacity:.3;transform:scale(.95)}
-.ic.ph{background:rgba(13,13,13,.04);border:1.5px dashed rgba(13,13,13,.15);min-height:46px}
-.ic-title{font-size:.8rem;font-weight:500;color:var(--ink);margin-bottom:.1rem;padding-right:1.4rem}
-.ic-sub{font-size:.68rem;color:var(--mid);line-height:1.3}
-.ic-chip{display:inline-block;font-size:.6rem;font-weight:500;padding:.08rem .42rem;border-radius:3px;margin-top:.28rem;background:rgba(13,13,13,.06);color:var(--mid)}
-.dh{position:absolute;top:.48rem;right:3rem;font-size:.72rem;opacity:.18;cursor:grab}
-.ic-remove{position:absolute;top:.38rem;right:.42rem;width:18px;height:18px;border-radius:50%;background:transparent;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.78rem;color:rgba(13,13,13,.2);transition:all .15s;line-height:1;font-family:'DM Sans',sans-serif;padding:0}
-.ic-remove:hover{background:rgba(200,0,0,.1);color:#c00}
-.ic-edit{position:absolute;top:.38rem;right:1.6rem;width:18px;height:18px;border-radius:50%;background:transparent;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.75rem;color:rgba(13,13,13,.2);transition:all .15s;line-height:1;font-family:'DM Sans',sans-serif;padding:0}
-.ic-edit:hover{background:rgba(13,13,13,.08);color:var(--ink)}
-.add-btn{margin-top:auto;padding:.38rem;border-radius:7px;border:1px dashed var(--border);background:transparent;color:var(--mid);font-size:.7rem;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .18s;text-align:center;width:100%}
-.add-btn:hover{border-color:var(--ink);color:var(--ink)}
-.reset-btn{margin-top:1rem;display:inline-flex;align-items:center;gap:.35rem;font-size:.72rem;font-weight:500;color:var(--mid);background:none;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;transition:color .18s;padding:.15rem 0}
-.reset-btn:hover{color:var(--ink)}
-
-/* EMPTY DAY STATE */
-.day-empty{display:none;flex:1;align-items:center;justify-content:center;flex-direction:column;gap:.4rem;padding:1rem .5rem;text-align:center;pointer-events:none}
-.day-col.is-empty .day-empty{display:flex}
-.day-empty-icon{font-size:1.4rem;opacity:.25}
-.day-empty-text{font-size:.68rem;color:var(--mid);line-height:1.4;opacity:.6}
-
-/* ADD TO ITINERARY BUTTON on explore cards */
-.card-add-btn{
-  display:inline-flex;align-items:center;gap:.3rem;
-  font-size:.7rem;font-weight:600;letter-spacing:.04em;
-  background:var(--ink);color:#fff;
-  padding:.28rem .75rem;border-radius:999px;border:none;
-  cursor:pointer;font-family:'DM Sans',sans-serif;
-  transition:all .16s;white-space:nowrap;
-}
-.card-add-btn:hover{background:#333}
-.card-add-btn.added{background:#1a5c35;color:#fff}
-
-/* DAY PICKER POPOVER */
-.day-picker{
-  position:absolute;bottom:calc(100% + 6px);left:0;z-index:200;
-  background:var(--ink);border-radius:12px;
-  padding:.6rem .5rem;
-  display:none;flex-direction:column;gap:.3rem;
-  box-shadow:0 12px 40px rgba(0,0,0,.25);
-  min-width:160px;
-}
-.day-picker.open{display:flex}
-.day-picker-item{
-  background:transparent;border:none;border-radius:8px;
-  padding:.42rem .8rem;text-align:left;
-  font-size:.76rem;font-weight:500;color:rgba(255,255,255,.7);
-  cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s;
-}
-.day-picker-item:hover{background:rgba(255,255,255,.1);color:#fff}
-.card-links-row{position:relative;display:flex;gap:.4rem;flex-wrap:wrap;align-items:center}
-
-/* MAP SECTION */
-#itin-map{width:100%;border-radius:var(--r);overflow:hidden;border:1px solid var(--border);margin-top:2rem;background:#e8e4dc}
-.map-canvas{width:100%;height:440px;display:block}
-.map-toolbar{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.8rem;margin-bottom:1rem}
-.map-toolbar-title{font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:.06em;color:var(--ink)}
-.map-btn{display:inline-flex;align-items:center;gap:.4rem;padding:.42rem 1rem;border-radius:999px;border:1px solid var(--border);background:var(--white);color:var(--ink);font-size:.74rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;text-decoration:none;transition:all .18s}
-.map-btn:hover{background:var(--ink);color:#fff;border-color:var(--ink)}
-.map-btn.primary{background:var(--ink);color:#fff;border-color:var(--ink)}
-.map-btn.primary:hover{background:#333}
-.map-day-tabs{display:flex;gap:.35rem;flex-wrap:wrap;margin-bottom:1rem}
-.map-day-tab{padding:.3rem .85rem;border-radius:999px;border:1px solid var(--border);background:transparent;color:var(--mid);font-size:.72rem;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .18s}
-.map-day-tab:hover{border-color:var(--ink);color:var(--ink)}
-.map-day-tab.active{background:var(--ink);color:#fff;border-color:var(--ink)}
-.map-legend{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:.8rem}
-.map-legend-item{display:flex;align-items:center;gap:.35rem;font-size:.72rem;color:var(--mid)}
-.map-legend-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
-
-/* Reddit callout */
-.reddit-callout{background:var(--ink);color:#fff;border-radius:var(--r);padding:1.8rem 2rem;margin-bottom:2rem;display:grid;grid-template-columns:1fr 1fr auto;gap:1.5rem;align-items:start}
-.rc-tag{font-size:.6rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.35);margin-bottom:.4rem}
-.rc-title{font-family:'Bebas Neue',sans-serif;font-size:1.3rem;letter-spacing:.05em;color:#fff;margin-bottom:.4rem}
-.rc-sub{font-size:.78rem;color:rgba(255,255,255,.45);line-height:1.6;font-weight:300}
-.rc-picks{display:flex;flex-direction:column;gap:.45rem}
-.rc-pick{font-size:.78rem;color:rgba(255,255,255,.6);line-height:1.4}
-.rc-link{align-self:flex-start;display:inline-block;font-size:.72rem;font-weight:600;letter-spacing:.06em;color:rgba(255,255,255,.5);text-decoration:none;border:1px solid rgba(255,255,255,.15);border-radius:999px;padding:.35rem .9rem;white-space:nowrap;transition:all .18s}
-.rc-link:hover{color:#fff;border-color:rgba(255,255,255,.4)}
-
-/* CHECKLIST */
-#page-pack{background:var(--sand)}
-.cl-prog{margin-bottom:2rem}
-.cl-prog-label{font-size:.7rem;color:var(--mid);margin-bottom:.45rem;letter-spacing:.04em}
-.cl-bar{height:8px;background:rgba(13,13,13,.08);border-radius:999px;overflow:hidden}
-.cl-fill{height:100%;background:var(--ink);border-radius:999px;transition:width .35s ease;width:0%}
-.cl-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(255px,1fr));gap:1px;background:var(--border);border:1px solid var(--border);border-radius:var(--r);overflow:hidden}
-.cl-group{background:var(--white);padding:1.5rem}
-.cl-group h4{font-family:'Bebas Neue',sans-serif;font-size:.95rem;letter-spacing:.08em;color:var(--ink);margin-bottom:.85rem;padding-bottom:.6rem;border-bottom:1px solid var(--border)}
-.cl-item{display:flex;align-items:center;gap:.72rem;padding:.45rem 0;border-bottom:1px solid rgba(13,13,13,.05);cursor:pointer}
-.cl-item:last-child{border-bottom:none}
-.cl-item input{appearance:none;width:15px;height:15px;flex-shrink:0;border:1.5px solid rgba(13,13,13,.18);border-radius:3px;cursor:pointer;position:relative;transition:all .15s}
-.cl-item input:checked{background:var(--ink);border-color:var(--ink)}
-.cl-item input:checked::after{content:'✓';position:absolute;color:#fff;font-size:.58rem;font-weight:700;top:50%;left:50%;transform:translate(-50%,-50%)}
-.cl-item label{font-size:.82rem;color:var(--ink);cursor:pointer;transition:all .15s;font-weight:300}
-.cl-item.done label{text-decoration:line-through;color:rgba(13,13,13,.28)}
-
-/* MODAL */
-.overlay{position:fixed;inset:0;background:rgba(13,13,13,.5);backdrop-filter:blur(6px);z-index:500;display:none;align-items:center;justify-content:center;padding:1rem}
-.overlay.open{display:flex}
-.modal{background:var(--white);border-radius:var(--r);padding:2rem;width:100%;max-width:390px;border:1px solid var(--border);box-shadow:0 30px 70px rgba(0,0,0,.2)}
-.modal h3{font-family:'Bebas Neue',sans-serif;font-size:1.5rem;letter-spacing:.06em;color:var(--ink);margin-bottom:1.1rem}
-.modal input{width:100%;padding:.58rem .8rem;border:1px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.84rem;color:var(--ink);margin-bottom:.65rem;outline:none;transition:border-color .18s;background:var(--sand)}
-.modal input:focus{border-color:var(--ink)}
-.m-actions{display:flex;gap:.65rem}
-.m-actions button{flex:1;padding:.58rem;border-radius:8px;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:.84rem;font-weight:500;transition:all .18s}
-.m-save{background:var(--ink);color:#fff}
-.m-save:hover{background:#222}
-.m-cancel{background:rgba(13,13,13,.07);color:var(--mid)}
-.m-cancel:hover{background:rgba(13,13,13,.13)}
-
-/* MAP LOADING SKELETON */
-.map-wrap{position:relative}
-.map-loader{position:absolute;inset:0;background:var(--warm);border-radius:var(--r);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:.6rem;z-index:2;transition:opacity .3s}
-.map-loader.hidden{opacity:0;pointer-events:none}
-.map-spinner{width:28px;height:28px;border:2.5px solid rgba(13,13,13,.12);border-top-color:var(--ink);border-radius:50%;animation:spin .8s linear infinite}
-.map-loader-text{font-size:.75rem;color:var(--mid);letter-spacing:.04em}
-@keyframes spin{to{transform:rotate(360deg)}}
-
-/* DROP STRIP */
-.drop-strip{display:none;position:fixed;bottom:0;left:0;right:0;z-index:400;background:rgba(13,13,13,.92);backdrop-filter:blur(12px);border-top:1px solid rgba(255,255,255,.1);padding:.7rem 1rem;gap:.5rem;align-items:center;overflow-x:auto}
-.drop-strip.active{display:flex}
-.drop-strip-label{font-size:.65rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.35);white-space:nowrap;margin-right:.3rem}
-.drop-zone{flex-shrink:0;padding:.55rem 1.1rem;border-radius:10px;border:1.5px dashed rgba(255,255,255,.25);background:rgba(255,255,255,.06);color:rgba(255,255,255,.6);font-size:.78rem;font-weight:500;cursor:pointer;transition:all .18s;text-align:center;white-space:nowrap}
-.drop-zone:hover,.drop-zone.dz-over{background:rgba(255,255,255,.15);border-color:rgba(255,255,255,.6);color:#fff}
-.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(8px);background:var(--ink);color:#fff;font-size:.78rem;font-weight:500;letter-spacing:.02em;padding:.55rem 1.2rem;border-radius:999px;opacity:0;transition:opacity .25s,transform .25s;pointer-events:none;z-index:600;white-space:nowrap}
-.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-
-/* PRINT STYLES */
-@media print{
-  nav,footer,.map-toolbar,.map-day-tabs,.reset-btn,.itin-hint,
-  .map-loader,.reddit-callout,.ic-remove,.ic-edit,.dh,
-  #itin-map,.map-legend,#dropStrip,.toast,.overlay{display:none!important}
-  body{background:#fff;color:#000;font-size:11pt}
-  .page{display:block!important;animation:none!important}
-  #page-home,#page-stay,#page-car,#page-explore,#page-pack{display:none!important}
-  #page-itinerary{display:block!important}
-  .itin-grid{display:grid!important;grid-template-columns:repeat(5,1fr)!important;gap:8px!important;border:1px solid #ccc}
-  .day-col{background:#fff!important;border:none!important;break-inside:avoid}
-  .day-head{border-bottom:1px solid #eee!important}
-  .ic{background:#f5f5f5!important;border:1px solid #ddd!important;break-inside:avoid;margin-bottom:4px!important}
-  .wrap{padding:1rem!important;max-width:100%!important}
-  .sec-title{font-size:1.4rem!important;margin-bottom:1rem!important}
-  .day-empty{display:none!important}
-  .add-btn{display:none!important}
+  --bg:#0f172a;
+  --card:#111827;
+  --muted:#94a3b8;
+  --text:#f8fafc;
+  --accent:#38bdf8;
+  --border:rgba(255,255,255,.08);
 }
 
-/* FOOTER */
-footer{background:var(--ink);color:rgba(255,255,255,.22);display:flex;align-items:center;justify-content:space-between;padding:1.5rem 2rem;font-size:.7rem;letter-spacing:.07em}
-.footer-logo{font-family:'Bebas Neue',sans-serif;font-size:1.05rem;letter-spacing:.14em;color:rgba(255,255,255,.45)}
-
-/* RESPONSIVE */
-@media(max-width:1100px){.itin-grid{grid-template-columns:repeat(3,1fr)}}
-@media(max-width:700px){
-  nav{padding:0 1rem}
-  .nav-links li a{font-size:.65rem;padding:.3rem .5rem}
-  .stay-layout,.car-row{grid-template-columns:1fr}
-  .cards{grid-template-columns:1fr}
-  .cl-grid{grid-template-columns:1fr}
-  .quick-nav{grid-template-columns:1fr 1fr}
-  .reddit-callout{grid-template-columns:1fr}
-  .wrap{padding:3.5rem 1.2rem}
-  .hero-inner{padding:0 1.5rem}
-  .hero h1{font-size:4.2rem}
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
 }
-@media(max-width:600px){.itin-grid{grid-template-columns:1fr 1fr;overflow-x:auto}}
-@media(max-width:420px){.itin-grid{grid-template-columns:1fr}}
+
+html{
+  scroll-behavior:smooth;
+}
+
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  line-height:1.6;
+}
+
+img{
+  width:100%;
+  display:block;
+  border-radius:18px;
+}
+
+.container{
+  width:min(1200px,92%);
+  margin:auto;
+}
+
+header{
+  padding:90px 0 50px;
+  text-align:center;
+}
+
+header h1{
+  font-size:clamp(2.8rem,6vw,5rem);
+  line-height:1;
+}
+
+header p{
+  color:var(--muted);
+  margin-top:16px;
+  font-size:1.1rem;
+}
+
+.hero-grid{
+  margin-top:42px;
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+  gap:18px;
+}
+
+.hero-grid img{
+  height:280px;
+  object-fit:cover;
+  content-visibility:auto;
+}
+
+.stats{
+  margin-top:36px;
+  display:flex;
+  justify-content:center;
+  flex-wrap:wrap;
+  gap:14px;
+}
+
+.stat{
+  padding:14px 18px;
+  background:rgba(255,255,255,.05);
+  border:1px solid var(--border);
+  border-radius:16px;
+}
+
+section{
+  padding:70px 0;
+}
+
+.section-title{
+  font-size:2rem;
+  margin-bottom:30px;
+}
+
+.cards{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+  gap:22px;
+}
+
+.card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:24px;
+  overflow:hidden;
+  transition:.25s ease;
+  content-visibility:auto;
+}
+
+.card:hover{
+  transform:translateY(-6px);
+}
+
+.card-content{
+  padding:18px;
+}
+
+.card h3{
+  margin-bottom:10px;
+}
+
+.card p{
+  color:var(--muted);
+  font-size:.95rem;
+}
+
+.day{
+  margin-bottom:24px;
+  padding:24px;
+  background:var(--card);
+  border-radius:22px;
+  border:1px solid var(--border);
+}
+
+.day h3{
+  margin-bottom:10px;
+}
+
+ul{
+  padding-left:18px;
+}
+
+li{
+  margin:10px 0;
+}
+
+.pack-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:20px;
+}
+
+.pack-card{
+  background:var(--card);
+  border:1px solid var(--border);
+  padding:20px;
+  border-radius:20px;
+}
+
+footer{
+  padding:60px 0;
+  text-align:center;
+  color:var(--muted);
+}
+
+button{
+  cursor:pointer;
+  border:none;
+  background:var(--accent);
+  color:#000;
+  padding:12px 18px;
+  border-radius:999px;
+  font-weight:700;
+}
+
+.search{
+  width:100%;
+  padding:14px 18px;
+  border-radius:14px;
+  border:none;
+  margin-bottom:26px;
+  background:#111827;
+  color:white;
+}
+
+@media(max-width:640px){
+  header{
+    padding-top:60px;
+  }
+}
 </style>
 </head>
+
 <body>
 
-<nav>
-  <a class="nav-logo" onclick="showPage('home')">OREGON TRIP</a>
-  <ul class="nav-links">
-    <li><a onclick="showPage('home')" data-page="home" class="active">Home</a></li>
-    <li><a onclick="showPage('stay')" data-page="stay">Stay</a></li>
-    <li><a onclick="showPage('car')" data-page="car">Car</a></li>
-    <li><a onclick="showPage('explore')" data-page="explore">Explore</a></li>
-    <li><a onclick="showPage('itinerary')" data-page="itinerary">Plan</a></li>
-    <li><a onclick="showPage('pack')" data-page="pack">Pack</a></li>
-  </ul>
-</nav>
+<header class="container">
+  <h1>Oregon Trip 2026</h1>
+  <p>Portland • Cannon Beach • Waterfalls • Food • Coffee • Nature</p>
 
-<!-- PAGE: HOME -->
-<div id="page-home" class="page active">
-  <section class="hero">
-    <div class="hero-media"><img src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1800&q=85" alt="Oregon"></div>
-    <div class="hero-inner">
-      <div class="hero-kicker"><span></span>Pacific Northwest · May 2025<span></span></div>
-      <h1>OREGON<br><em>Trip</em></h1>
-      <div class="hero-meta">
-        <div><div class="hmi-label">Where</div><div class="hmi-val">Tigard & Portland, OR</div></div>
-        <div class="hero-sep"></div>
-        <div><div class="hmi-label">Dates</div><div class="hmi-val">May 21 – 25</div></div>
-        <div class="hero-sep"></div>
-        <div><div class="hmi-label">Stay</div><div class="hmi-val">Tigard Airbnb</div></div>
-        <div class="hero-sep"></div>
-        <div><div class="hmi-label">Car</div><div class="hmi-val">Avis Rental</div></div>
-      </div>
+  <div class="stats">
+    <div class="stat">May 2026</div>
+    <div class="stat">25+ Attractions</div>
+    <div class="stat">Mobile Optimized</div>
+    <div class="stat">Fast Loading</div>
+  </div>
+
+  <div class="hero-grid">
+    <img loading="lazy" src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?q=80&w=1200&auto=format&fit=crop" alt="">
+    <img loading="lazy" src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=1200&auto=format&fit=crop" alt="">
+    <img loading="lazy" src="https://images.unsplash.com/photo-1470770841072-f978cf4d019e?q=80&w=1200&auto=format&fit=crop" alt="">
+  </div>
+</header>
+
+<section class="container">
+  <h2 class="section-title">Explore</h2>
+
+  <input id="searchBox" class="search" placeholder="Search attractions..." />
+
+  <div id="cards" class="cards"></div>
+</section>
+
+<section class="container">
+  <h2 class="section-title">Trip Itinerary</h2>
+
+  <div class="day">
+    <h3>Day 1 — Portland</h3>
+    <ul>
+      <li>Powell’s Books</li>
+      <li>Japanese Garden</li>
+      <li>Lan Su Chinese Garden</li>
+      <li>Food trucks + coffee crawl</li>
+    </ul>
+  </div>
+
+  <div class="day">
+    <h3>Day 2 — Columbia River Gorge</h3>
+    <ul>
+      <li>Multnomah Falls</li>
+      <li>Vista House</li>
+      <li>Latourell Falls</li>
+      <li>Hood River drive</li>
+    </ul>
+  </div>
+
+  <div class="day">
+    <h3>Day 3 — Cannon Beach</h3>
+    <ul>
+      <li>Haystack Rock</li>
+      <li>Indian Beach</li>
+      <li>Ecola State Park</li>
+      <li>Sunset photos</li>
+    </ul>
+  </div>
+</section>
+
+<section class="container">
+  <h2 class="section-title">Packing Checklist</h2>
+
+  <div class="pack-grid">
+    <div class="pack-card">
+      <h3>Clothes</h3>
+      <ul>
+        <li>Jackets</li>
+        <li>Layers</li>
+        <li>Beanie</li>
+        <li>Waterproof shoes</li>
+      </ul>
     </div>
-    <div class="hero-bottom">
-      <div class="hs"><div class="hs-n">4</div><div class="hs-l">Nights</div></div>
-      <div class="hs"><div class="hs-n">5</div><div class="hs-l">Days</div></div>
-      <div class="hs"><div class="hs-n">16+</div><div class="hs-l">Attractions</div></div>
-      <div class="hs"><div class="hs-n">$483</div><div class="hs-l">Rental Total</div></div>
+
+    <div class="pack-card">
+      <h3>Tech</h3>
+      <ul>
+        <li>Phone charger</li>
+        <li>Power bank</li>
+        <li>Camera</li>
+        <li>Tripod</li>
+      </ul>
     </div>
-  </section>
-  <div class="wrap">
-    <div class="sec-label">Jump to a section</div>
-    <div class="quick-nav">
-      <div class="qn-item" onclick="showPage('stay')" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' ')showPage('stay')"><div class="qn-icon">🏡</div><div class="qn-label">Accommodation</div><div class="qn-name">Airbnb Stay</div><div class="qn-arrow">→</div></div>
-      <div class="qn-item" onclick="showPage('car')" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' ')showPage('car')"><div class="qn-icon">🚗</div><div class="qn-label">Transportation</div><div class="qn-name">Rental Car</div><div class="qn-arrow">→</div></div>
-      <div class="qn-item" onclick="showPage('explore')" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' ')showPage('explore')"><div class="qn-icon">🗺</div><div class="qn-label">16+ Attractions</div><div class="qn-name">Explore Oregon</div><div class="qn-arrow">→</div></div>
-      <div class="qn-item" onclick="showPage('itinerary')" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' ')showPage('itinerary')"><div class="qn-icon">📅</div><div class="qn-label">Day by Day</div><div class="qn-name">Itinerary</div><div class="qn-arrow">→</div></div>
+
+    <div class="pack-card">
+      <h3>Roadtrip</h3>
+      <ul>
+        <li>Snacks</li>
+        <li>Water bottles</li>
+        <li>Sunglasses</li>
+        <li>Playlist downloaded</li>
+      </ul>
     </div>
   </div>
-  <footer><div class="footer-logo">OREGON TRIP</div><div>May 21–25 · 2025 · Tigard & Portland, Oregon</div></footer>
-</div>
+</section>
 
-<!-- PAGE: STAY -->
-<div id="page-stay" class="page">
-  <div class="wrap">
-    <div class="sec-label">Where you're staying</div>
-    <div class="sec-title">THE <em>Airbnb</em></div>
-    <div class="stay-layout">
-      <div class="stay-left">
-        <div class="stay-eyebrow">Tigard, Oregon</div>
-        <div class="stay-name">SW Catalina Drive</div>
-        <div class="stay-addr">14726 SW Catalina Drive, Tigard, OR 97223</div>
-        <p class="stay-desc">Your base for exploring Portland metro. Smart lock entry — orange front doors on the uphill side. 10 minutes from Portland, 45 minutes from wine country.</p>
-        <div class="stay-dates">
-          <div><div class="sd-l">Check-in</div><div class="sd-v">Thu May 21</div></div>
-          <div><div class="sd-l">Checkout</div><div class="sd-v">Mon May 25</div></div>
-          <div><div class="sd-l">Stay</div><div class="sd-v">4 Nights</div></div>
-        </div>
-      </div>
-      <div class="stay-right">
-        <div class="stay-rule"><div class="sr-icon">🔐</div><div><div class="sr-title">Arrival</div><div class="sr-body">Smart lock entry. Orange front doors on the uphill side.</div></div></div>
-        <div class="stay-rule"><div class="sr-icon">🤫</div><div><div class="sr-title">Quiet Hours</div><div class="sr-body">11 PM – 6 AM · No smoking · No parties or events.</div></div></div>
-        <div class="stay-rule"><div class="sr-icon">🗺</div><div><div class="sr-title">Location</div><div class="sr-body">~10 mi from downtown Portland · ~45 min to Willamette Valley wine country.</div></div></div>
-      </div>
-    </div>
-  </div>
-  <footer><div class="footer-logo">OREGON TRIP</div><div>May 21–25 · 2025 · Tigard & Portland, Oregon</div></footer>
-</div>
-
-<!-- PAGE: CAR -->
-<div id="page-car" class="page">
-  <div class="wrap">
-    <div class="sec-label">Getting around</div>
-    <div class="sec-title">AVIS <em>Rental</em></div>
-    <div class="car-row">
-      <div class="ct"><span class="ct-icon">🛬</span><div class="ct-label">Pickup</div><div class="ct-val">Thu, May 21</div><div class="ct-sub">PDX Airport · 10 PM</div></div>
-      <div class="ct"><span class="ct-icon">🛫</span><div class="ct-label">Drop-off</div><div class="ct-val">Mon, May 25</div><div class="ct-sub">PDX Airport · 10 PM</div></div>
-      <div class="ct"><span class="ct-icon">💳</span><div class="ct-label">Total Cost</div><div class="ct-val">$483.15</div><div class="ct-sub">4-day full rental</div></div>
-    </div>
-  </div>
-  <footer><div class="footer-logo">OREGON TRIP</div><div>May 21–25 · 2025 · Tigard & Portland, Oregon</div></footer>
-</div>
-
-<!-- PAGE: EXPLORE -->
-<div id="page-explore" class="page">
-  <div class="wrap">
-    <div class="sec-label">Things to do</div>
-    <div class="sec-title">EXPLORE <em>Oregon</em></div>
-    <div class="filter-shell">
-      <div class="fs"><span class="fs-lbl">Time of Day</span><div class="fp-row"><button class="fp on" data-g="time" data-v="all" onclick="filt('time','all',this)">All</button><button class="fp" data-g="time" data-v="morning" onclick="filt('time','morning',this)">🌅 Morning</button><button class="fp" data-g="time" data-v="afternoon" onclick="filt('time','afternoon',this)">☀️ Afternoon</button><button class="fp" data-g="time" data-v="evening" onclick="filt('time','evening',this)">🌙 Evening</button></div></div>
-      <div class="fs"><span class="fs-lbl">Category</span><div class="fp-row"><button class="fp on" data-g="cat" data-v="all" onclick="filt('cat','all',this)">All</button><button class="fp" data-g="cat" data-v="garden" onclick="filt('cat','garden',this)">🌿 Garden</button><button class="fp" data-g="cat" data-v="museum" onclick="filt('cat','museum',this)">🏛 Museum</button><button class="fp" data-g="cat" data-v="food" onclick="filt('cat','food',this)">🍽 Food</button><button class="fp" data-g="cat" data-v="outdoor" onclick="filt('cat','outdoor',this)">🥾 Outdoor</button><button class="fp" data-g="cat" data-v="wine" onclick="filt('cat','wine',this)">🍷 Wine</button><button class="fp" data-g="cat" data-v="experience" onclick="filt('cat','experience',this)">✨ Experience</button><button class="fp" data-g="cat" data-v="coast" onclick="filt('cat','coast',this)">🌊 Coast</button></div></div>
-      <div class="fs"><span class="fs-lbl">Distance from Airbnb</span><div class="fp-row"><button class="fp on" data-g="dist" data-v="all" onclick="filt('dist','all',this)">All</button><button class="fp" data-g="dist" data-v="near" onclick="filt('dist','near',this)">📍 Under 15 mi</button><button class="fp" data-g="dist" data-v="mid" onclick="filt('dist','mid',this)">🚗 15–30 mi</button><button class="fp" data-g="dist" data-v="trek" onclick="filt('dist','trek',this)">🗺 Trek 30+ mi</button></div></div>
-      <div class="fs"><span class="fs-lbl">Cuisine (Food Carts)</span><div class="fp-row"><button class="fp on" data-g="cuisine" data-v="all" onclick="filt('cuisine','all',this)">All</button><button class="fp" data-g="cuisine" data-v="korean" onclick="filt('cuisine','korean',this)">🇰🇷 Korean</button><button class="fp" data-g="cuisine" data-v="american" onclick="filt('cuisine','american',this)">🍔 American</button><button class="fp" data-g="cuisine" data-v="mexican" onclick="filt('cuisine','mexican',this)">🌮 Mexican</button><button class="fp" data-g="cuisine" data-v="asian" onclick="filt('cuisine','asian',this)">🍜 Asian</button><button class="fp" data-g="cuisine" data-v="bbq" onclick="filt('cuisine','bbq',this)">🔥 BBQ</button><button class="fp" data-g="cuisine" data-v="pizza" onclick="filt('cuisine','pizza',this)">🍕 Pizza</button><button class="fp" data-g="cuisine" data-v="latin" onclick="filt('cuisine','latin',this)">🌶 Latin</button><button class="fp" data-g="cuisine" data-v="vegan" onclick="filt('cuisine','vegan',this)">🥗 Vegan</button></div></div>
-    </div>
-    <div id="filterStatus" style="display:none;padding:.5rem 0 1rem;display:flex;align-items:center;gap:.8rem">
-      <span id="filterCount" style="font-size:.72rem;font-weight:600;color:var(--ink)"></span>
-      <button onclick="clearAllFilters()" style="font-size:.7rem;font-weight:600;color:var(--mid);background:none;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;text-decoration:underline;padding:0">Clear all filters</button>
-    </div>
-    <div class="cards" id="cardsGrid">
-      <div class="no-r" id="noR">No results — try adjusting the filters.</div>
-
-      <!-- ROSE GARDEN -->
-      <div class="card" data-time="morning afternoon" data-cat="garden" data-dist="near" data-title="🌹 Rose Garden" data-sub="Free · ~11 mi · Peak bloom late May">
-        <div class="card-drag-handle" title="Drag to itinerary">⠿</div>
-        <div class="card-img"><img src="https://www.portland.gov/sites/default/files/2020-01/rose-garden-6.jpg" alt="Rose Garden" onerror="this.src='https://images.unsplash.com/photo-1459501462159-97d5bded1416?auto=format&fit=crop&w=700&q=80'"><div class="card-time">🌅 Morning / Afternoon</div></div>
-        <div class="card-body"><div class="card-cat">Garden</div><h3>International Rose Test Garden</h3><p>10,000+ rose bushes with sweeping Mt. Hood views. America's oldest public rose test garden — peak bloom lands right during your late-May visit.</p>
-        <div class="card-info"><div class="ci"><span class="ci-i">🕐</span>Open daily 7:30 AM – 9 PM</div><div class="ci"><span class="ci-i">💰</span><span class="tag-free">FREE</span> · Free guided tours 1 PM daily (Memorial Day–Labor Day)</div><div class="ci"><span class="ci-i">📍</span>~11 mi · ~20 min · Washington Park</div></div>
-        <div class="card-stars">★★★★★ Peak bloom during your trip</div>
-        <div class="card-links card-links-row"><a class="card-link" href="https://www.portland.gov/parks/international-rose-test-garden" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>Website</a><a class="card-link" href="https://maps.google.com/?q=International+Rose+Test+Garden+Portland+OR" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>Maps</a><div style="position:relative;margin-left:auto"><button class="card-add-btn" onclick="toggleDayPicker(this)">+ Add to Itinerary</button><div class="day-picker"><button class="day-picker-item" onclick="addFromCard(this,'thu')">Thu May 21</button><button class="day-picker-item" onclick="addFromCard(this,'fri')">Fri May 22</button><button class="day-picker-item" onclick="addFromCard(this,'sat')">Sat May 23</button><button class="day-picker-item" onclick="addFromCard(this,'sun')">Sun May 24</button><button class="day-picker-item" onclick="addFromCard(this,'mon')">Mon May 25</button></div></div></div></div></div>
-
-      <!-- JAPANESE GARDEN -->
-      <div class="card" data-time="morning afternoon" data-cat="garden" data-dist="near" data-title="🌿 Japanese Garden" data-sub="$22.50 · Book ahead · Washington Park">
-        <div class="card-drag-handle" title="Drag to itinerary">⠿</div>
-        <div class="card-img"><img src="https://japanesegarden.org/wp-content/uploads/2023/03/Natural-Garden_Nikki-Feuerstein_Web.jpg" alt="Japanese Garden" onerror="this.src='https://images.unsplash.com/photo-1614091369078-8a1ade08b99a?auto=format&fit=crop&w=700&q=80'"><div class="card-time">🌅 Morning best</div></div>
-        <div class="card-body"><div class="card-cat">Garden</div><h3>Portland Japanese Garden</h3><p>12 acres with 8 garden styles, koi ponds, bonsai terrace, and a tea house. Acclaimed as the most beautiful Japanese garden outside Japan. Allow 1.5–3 hrs.</p>
-        <div class="card-info"><div class="ci"><span class="ci-i">🕐</span>Wed–Mon 10 AM – 6 PM · Closed Tuesdays</div><div class="ci"><span class="ci-i">💰</span>Adult $22.50 · Youth (6–17) $16.50 · Under 5 free</div><div class="ci"><span class="ci-i">💡</span>Book ahead online — sells out on sunny days</div><div class="ci"><span class="ci-i">📍</span>~11 mi · ~20 min · Washington Park</div></div>
-        <div class="card-stars">★★★★★ Arrive at open for fewest crowds</div>
-        <div class="card-links card-links-row"><a class="card-link" href="https://japanesegarden.org" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>Website</a><a class="card-link" href="https://maps.google.com/?q=Portland+Japanese+Garden+OR" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>Maps</a><div style="position:relative;margin-left:auto"><button class="card-add-btn" onclick="toggleDayPicker(this)">+ Add to Itinerary</button><div class="day-picker"><button class="day-picker-item" onclick="addFromCard(this,'thu')">Thu May 21</button><button class="day-picker-item" onclick="addFromCard(this,'fri')">Fri May 22</button><button class="day-picker-item" onclick="addFromCard(this,'sat')">Sat May 23</button><button class="day-picker-item" onclick="addFromCard(this,'sun')">Sun May 24</button><button class="day-picker-item" onclick="addFromCard(this,'mon')">Mon May 25</button></div></div></div></div></div>
-
-      <!-- OMSI -->
-      <div class="card" data-time="morning afternoon" data-cat="museum" data-dist="near" data-title="🔭 OMSI" data-sub="$22.50 · 3–4 hours · Central Eastside">
-        <div class="card-drag-handle" title="Drag to itinerary">⠿</div>
-        <div class="card-img"><img src="https://oregon.com/app/uploads/2021/04/OMSI-outside.jpg" alt="OMSI" onerror="this.src='https://images.unsplash.com/photo-1532094349884-543559059a5e?auto=format&fit=crop&w=700&q=80'"><div class="card-time">🔬 All Day</div></div>
-        <div class="card-body"><div class="card-cat">Museum</div><h3>OMSI – Oregon Museum of Science</h3><p>Interactive exhibits, a real Navy submarine, planetarium shows, and a giant-screen theater. The definitive rainy-day plan — plan at least 3–4 hours.</p>
-        <div class="card-info"><div class="ci"><span class="ci-i">🕐</span>Tue–Fri 9:30–5:30 · Sat 9:30–7 PM · Sun 9:30–5:30</div><div class="ci"><span class="ci-i">💰</span>Adult $22.50 · Youth (3–13) $15.50 · Planetarium/Sub +$7–10</div><div class="ci"><span class="ci-i">📍</span>~13 mi · ~22 min · Central Eastside</div></div>
-        <div class="card-stars">★★★★☆ Plan 3–4 hours minimum</div>
-        <div class="card-links card-links-row"><a class="card-link" href="https://www.omsi.edu" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>Website</a><a class="card-link" href="https://maps.google.com/?q=OMSI+Portland+OR" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>Maps</a><div style="position:relative;margin-left:auto"><button class="card-add-btn" onclick="toggleDayPicker(this)">+ Add to Itinerary</button><div class="day-picker"><button class="day-picker-item" onclick="addFromCard(this,'thu')">Thu May 21</button><button class="day-picker-item" onclick="addFromCard(this,'fri')">Fri May 22</button><button class="day-picker-item" onclick="addFromCard(this,'sat')">Sat May 23</button><button class="day-picker-item" onclick="addFromCard(this,'sun')">Sun May 24</button><button class="day-picker-item" onclick="addFromCard(this,'mon')">Mon May 25</button></div></div></div></div></div>
-
-      <!-- PITTOCK MANSION -->
-      <div class="card" data-time="morning afternoon" data-cat="museum outdoor" data-dist="near" data-title="🏰 Pittock Mansion" data-sub="Grounds free · Museum $16 · NW Portland">
-        <div class="card-drag-handle" title="Drag to itinerary">⠿</div>
-        <div class="card-img"><img src="https://pittockmansion.org/wp-content/uploads/2022/07/PM_Exterior_Summer-scaled.jpg" alt="Pittock Mansion" onerror="this.src='https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=700&q=80'"><div class="card-time">🌅 Morning / Afternoon</div></div>
-        <div class="card-body"><div class="card-cat">Historic · Outdoor</div><h3>Pittock Mansion</h3><p>A 1914 French Renaissance château on the West Hills with panoramic views of Portland, Mt. Hood, and five Cascade volcanoes. Grounds free — museum interior $16.</p>
-        <div class="card-info"><div class="ci"><span class="ci-i">🕐</span>Mon & Wed–Sun 10 AM–5 PM · Tue noon–5 PM</div><div class="ci"><span class="ci-i">💰</span>Grounds <span class="tag-free">FREE</span> · Museum: Adult $16 · Youth $12</div><div class="ci"><span class="ci-i">🥾</span>Hike up via Lower Macleay Trail (~5 mi round trip)</div><div class="ci"><span class="ci-i">📍</span>~12 mi · ~22 min · NW Portland</div></div>
-        <div class="card-stars">★★★★★ Best panoramic view in Portland</div>
-        <div class="card-links card-links-row"><a class="card-link" href="https://pittockmansion.org" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>Website</a><a class="card-link" href="https://maps.google.com/?q=Pittock+Mansion+Portland+OR" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>Maps</a><div style="position:relative;margin-left:auto"><button class="card-add-btn" onclick="toggleDayPicker(this)">+ Add to Itinerary</button><div class="day-picker"><button class="day-picker-item" onclick="addFromCard(this,'thu')">Thu May 21</button><button class="day-picker-item" onclick="addFromCard(this,'fri')">Fri May 22</button><button class="day-picker-item" onclick="addFromCard(this,'sat')">Sat May 23</button><button class="day-picker-item" onclick="addFromCard(this,'sun')">Sun May 24</button><button class="day-picker-item" onclick="addFromCard(this,'mon')">Mon May 25</button></div></div></div></div></div>
-
-      <!-- FOREST PARK -->
-      <div class="card" data-time="morning afternoon" data-cat="outdoor" data-dist="near" data-title="🌲 Forest Park & Witch's Castle" data-sub="Free · Lower Macleay Trail · NW Portland">
-        <div class="card-drag-handle" title="Drag to itinerary">⠿</div>
-        <div class="card-img"><img src="https://images.unsplash.com/photo-1448375240586-882707db888b?auto=format&fit=crop&w=700&q=80" alt="Forest Park"><div class="card-time">🌅 Morning best</div></div>
-        <div class="card-body"><div class="card-cat">Outdoor</div><h3>Forest Park & Witch's Castle</h3><p>5,156 acres of urban forest with 70+ miles of trails. The mossy "Witch's Castle" ruin on the Lower Macleay Trail is one of Portland's most iconic spots.</p>
-        <div class="card-info"><div class="ci"><span class="ci-i">🕐</span>Open daily dawn to dusk</div><div class="ci"><span class="ci-i">💰</span><span class="tag-free">FREE</span> · Bring waterproof shoes</div><div class="ci"><span class="ci-i">🥾</span>Lower Macleay → Pittock Mansion: 5 mi round trip · Moderate</div><div class="ci"><span class="ci-i">📍</span>~12 mi · ~20 min · NW Portland</div></div>
-        <div class="card-stars">★★★★★ Go early on sunny days</div>
-        <div class="card-links card-links-row"><a class="card-link" href="https://www.portland.gov/parks/forest-park" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>Website</a><a class="card-link" href="https://maps.google.com/?q=Forest+Park+Portland+OR" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>Maps</a><div style="position:relative;margin-left:auto"><button class="card-add-btn" onclick="toggleDayPicker(this)">+ Add to Itinerary</button><div class="day-picker"><button class="day-picker-item" onclick="addFromCard(this,'thu')">Thu May 21</button><button class="day-picker-item" onclick="addFromCard(this,'fri')">Fri May 22</button><button class="day-picker-item" onclick="addFromCard(this,'sat')">Sat May 23</button><button class="day-picker-item" onclick="addFromCard(this,'sun')">Sun May 24</button><button class="day-picker-item" onclick="addFromCard(this,'mon')">Mon May 25</button></div></div></div></div></div>
-
-      <!-- POWELL'S BOOKS -->
-      <div class="card" data-time="afternoon evening" data-cat="experience" data-dist="near" data-title="📚 Powell's City of Books" data-sub="Free to browse · 10AM–9PM · Pearl District">
-        <div class="card-drag-handle" title="Drag to itinerary">⠿</div>
-        <div class="card-img"><img src="https://images.unsplash.com/photo-1507842217343-583bb7270b66?auto=format&fit=crop&w=700&q=80" alt="Powell's Books"><div class="card-time">☀️ Afternoon / Evening</div></div>
-        <div class="card-body"><div class="card-cat">Landmark</div><h3>Powell's City of Books</h3><p>World's largest independent bookstore — an entire city block, ~1 million books. Free Sunday tours. Budget extra time; you will genuinely not want to leave.</p>
-        <div class="card-info"><div class="ci"><span class="ci-i">🕐</span>Daily 10 AM – 9 PM · 365 days a year</div><div class="ci"><span class="ci-i">💰</span><span class="tag-free">FREE to browse</span> · Free Sunday tours</div><div class="ci"><span class="ci-i">📍</span>~12 mi · ~20 min · Pearl District</div></div>
-        <div class="card-stars">★★★★★ A Portland essential</div>
-        <div class="card-links card-links-row"><a class="card-link" href="https://www.powells.com" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>Website</a><a class="card-link" href="https://maps.google.com/?q=Powell%27s+City+of+Books+Portland+OR" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>Maps</a><div style="position:relative;margin-left:auto"><button class="card-add-btn" onclick="toggleDayPicker(this)">+ Add to Itinerary</button><div class="day-picker"><button class="day-picker-item" onclick="addFromCard(this,'thu')">Thu May 21</button><button class="day-picker-item" onclick="addFromCard(this,'fri')">Fri May 22</button><button class="day-picker-item" onclick="addFromCard(this,'sat')">Sat May 23</button><button class="day-picker-item" onclick="addFromCard(this,'sun')">Sun May 24</button><button class="day-picker-item" onclick="addFromCard(this,'mon')">Mon May 25</button></div></div></div></div></div>
-
-      <!-- SATURDAY MARKET -->
-      <div class="card" data-time="morning afternoon" data-cat="food experience" data-dist="near" data-title="🛒 Portland Saturday Market" data-sub="Free entry · Sat 10–5, Sun 11–4:30 · Waterfront">
-        <div class="card-drag-handle" title="Drag to itinerary">⠿</div>
-        <div class="card-img"><img src="https://images.unsplash.com/photo-1533900298318-6b8da08a523e?auto=format&fit=crop&w=700&q=80" alt="Saturday Market"><div class="card-time">🌅 Morning / Afternoon</div></div>
-        <div class="card-body"><div class="card-cat">Market</div><h3>Portland Saturday Market</h3><p>Largest continuously operating outdoor arts & crafts market in the US. Local artisans, live music, and street food along the Willamette waterfront — open both Sat & Sun.</p>
-        <div class="card-info"><div class="ci"><span class="ci-i">🕐</span>Sat 10 AM–5 PM · Sun 11 AM–4:30 PM (Mar–Dec)</div><div class="ci"><span class="ci-i">💰</span><span class="tag-free">FREE to enter</span></div><div class="ci"><span class="ci-i">📍</span>~13 mi · ~22 min · Old Town / Waterfront</div></div>
-        <div class="card-stars">★★★★★ Open both Sat & Sun during your trip</div>
-        <div class="card-links card-links-row"><a class="card-link" href="https://portlandsaturdaymarket.com" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>Website</a><a class="card-link" href="https://maps.google.com/?q=Portland+Saturday+Market+OR" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>Maps</a><div style="position:relative;margin-left:auto"><button class="card-add-btn" onclick="toggleDayPicker(this)">+ Add to Itinerary</button><div class="day-picker"><button class="day-picker-item" onclick="addFromCard(this,'thu')">Thu May 21</button><button class="day-picker-item" onclick="addFromCard(this,'fri')">Fri May 22</button><button class="day-picker-item" onclick="addFromCard(this,'sat')">Sat May 23</button><button class="day-picker-item" onclick="addFromCard(this,'sun')">Sun May 24</button><button class="day-picker-item" onclick="addFromCard(this,'mon')">Mon May 25</button></div></div></div></div></div>
-
-      <!-- PEARL DISTRICT FOOD CARTS -->
-      <div class="card" data-time="afternoon evening" data-cat="food" data-dist="near" data-title="🍕 Pearl District & Food Cart Pods" data-sub="Free to explore · Meals $10–20 · Downtown">
-        <div class="card-drag-handle" title="Drag to itinerary">⠿</div>
-        <div class="card-img"><img src="https://www.travelportland.com/wp-content/uploads/2019/03/Portland-Food-Carts-1600x1067.jpg" alt="Portland food carts" onerror="this.src='https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=700&q=80'"><div class="card-time">☀️ Afternoon / Evening</div></div>
-        <div class="card-body"><div class="card-cat">Food</div><h3>Pearl District & Food Cart Pods</h3><p>Dozens of international cuisines in open-air pods — Thai, Korean BBQ, Ethiopian, and more. Plus galleries and boutiques throughout the Pearl District.</p>
-        <div class="card-info"><div class="ci"><span class="ci-i">🕐</span>Food carts ~11 AM–8 PM · Restaurants till 10 PM+</div><div class="ci"><span class="ci-i">💰</span><span class="tag-free">FREE to explore</span> · Meals ~$10–20 per person</div><div class="ci"><span class="ci-i">📍</span>~12 mi · ~20 min · Downtown Portland</div></div>
-        <div class="card-stars">★★★★★ Try the Cartopia pod on SE 12th</div>
-        <div class="card-links card-links-row"><a class="card-link" href="https://www.travelportland.com/food-carts/pods/" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>Website</a><a class="card-link" href="https://maps.google.com/?q=Pearl+District+Portland+OR" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>Maps</a><div style="position:relative;margin-left:auto"><button class="card-add-btn" onclick="toggleDayPicker(this)">+ Add to Itinerary</button><div class="day-picker"><button class="day-picker-item" onclick="addFromCard(this,'thu')">Thu May 21</button><button class="day-picker-item" onclick="addFromCard(this,'fri')">Fri May 22</button><button class="day-picker-item" onclick="addFromCard(this,'sat')">Sat May 23</button><button class="day-picker-item" onclick="addFromCard(this,'sun')">Sun May 24</button><button class="day-picker-item" onclick="addFromCard(this,'mon')">Mon May 25</button></div></div></div></div></div>
-
-      <!-- LAN SU GARDEN -->
-      <div class="card" data-time="morning afternoon" data-cat="garden" data-dist="near" data-title="🏮 Lan Su Chinese Garden" data-sub="Adult $14 · Daily 10–5 · Old Town/Chinatown">
-        <div class="card-drag-handle" title="Drag to itinerary">⠿</div>
-        <div class="card-img"><img src="https://lansugarden.org/wp-content/uploads/2021/08/Lan-Su-Chinese-Garden-Portland-Oregon-8.jpg" alt="Lan Su Garden" onerror="this.src='https://images.unsplash.com/photo-1526481280693-3bfa7568e0f3?auto=format&fit=crop&w=700&q=80'"><div class="card-time">🌅 Morning / Afternoon</div></div>
-        <div class="card-body"><div class="card-cat">Garden</div><h3>Lan Su Chinese Garden</h3><p>A Ming Dynasty–style garden hand-built by artisans from Suzhou, China — pavilions, a teahouse, and a koi lake in Portland's Chinatown. Allow 1–2 hours.</p>
-        <div class="card-info"><div class="ci"><span class="ci-i">🕐</span>Daily 10 AM – 5 PM (last entry 4:30 PM)</div><div class="ci"><span class="ci-i">💰</span>Adult $14 · Senior $11 · Youth (6–18) $9 · Under 6 free</div><div class="ci"><span class="ci-i">📍</span>~13 mi · ~22 min · Old Town / Chinatown</div></div>
-        <div class="card-stars">★★★★★ Most underrated spot in Portland</div>
-        <div class="card-links card-links-row"><a class="card-link" href="https://lansugarden.org" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>Website</a><a class="card-link" href="https://maps.google.com/?q=Lan+Su+Chinese+Garden+Portland+OR" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>Maps</a><div style="position:relative;margin-left:auto"><button class="card-add-btn" onclick="toggleDayPicker(this)">+ Add to Itinerary</button><div class="day-picker"><button class="day-picker-item" onclick="addFromCard(this,'thu')">Thu May 21</button><button class="day-picker-item" onclick="addFromCard(this,'fri')">Fri May 22</button><button class="day-picker-item" onclick="addFromCard(this,'sat')">Sat May 23</button><button class="day-picker-item" onclick="addFromCard(this,'sun')">Sun May 24</button><button class="day-picker-item" onclick="addFromCard(this,'mon')">Mon May 25</button></div></div></div></div></div>
-
-      <!-- PORTLAND ART MUSEUM -->
-      <div class="card" data-time="afternoon evening" data-cat="museum" data-dist="near" data-title="🎨 Portland Art Museum" data-sub="$25 · Free Thu 5–8 PM · South Park Blocks">
-        <div class="card-drag-handle" title="Drag to itinerary">⠿</div>
-        <div class="card-img"><img src="https://images.unsplash.com/photo-1531243269054-5ebf6f34081e?auto=format&fit=crop&w=700&q=80" alt="Portland Art Museum"><div class="card-time">☀️ Afternoon</div></div>
-        <div class="card-body"><div class="card-cat">Museum</div><h3>Portland Art Museum</h3><p>Oldest art museum in the Pacific Northwest — European masters, Native American collections, and rotating blockbusters. Free on Thursday evenings 5–8 PM.</p>
-        <div class="card-info"><div class="ci"><span class="ci-i">🕐</span>Tue–Sun 10–5 PM · Thu till 8 PM · Closed Mon</div><div class="ci"><span class="ci-i">💰</span>Adult $25 · Youth (under 18) free · <span class="tag-free">FREE Thu 5–8 PM</span></div><div class="ci"><span class="ci-i">📍</span>~12 mi · ~20 min · South Park Blocks, Downtown</div></div>
-        <div class="card-stars">★★★★☆ Free on Thursday evenings</div>
-        <div class="card-links card-links-row"><a class="card-link" href="https://portlandartmuseum.org" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>Website</a><a class="card-link" href="https://maps.google.com/?q=Portland+Art+Museum+OR" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>Maps</a><div style="position:relative;margin-left:auto"><button class="card-add-btn" onclick="toggleDayPicker(this)">+ Add to Itinerary</button><div class="day-picker"><button class="day-picker-item" onclick="addFromCard(this,'thu')">Thu May 21</button><button class="day-picker-item" onclick="addFromCard(this,'fri')">Fri May 22</button><button class="day-picker-item" onclick="addFromCard(this,'sat')">Sat May 23</button><button class="day-picker-item" onclick="addFromCard(this,'sun')">Sun May 24</button><button class="day-picker-item" onclick="addFromCard(this,'mon')">Mon May 25</button></div></div></div></div></div>
-
-      <!-- VOODOO DOUGHNUT -->
-      <div class="card" data-time="morning evening" data-cat="food" data-dist="near" data-title="🍩 Voodoo Doughnut" data-sub="$2–5 · Open 24/7 · Old Town Portland">
-        <div class="card-drag-handle" title="Drag to itinerary">⠿</div>
-        <div class="card-img"><img src="https://images.unsplash.com/photo-1551024601-bec78aea704b?auto=format&fit=crop&w=700&q=80" alt="Voodoo Doughnut"><div class="card-time">🌙 Open 24 hrs</div></div>
-        <div class="card-body"><div class="card-cat">Food</div><h3>Voodoo Doughnut</h3><p>Portland's most iconic food stop — Bacon Maple Bar, Voodoo Doll, Cap'n Crunch donut. Open 24/7, the line moves fast, and the pink box is a must-have souvenir.</p>
-        <div class="card-info"><div class="ci"><span class="ci-i">🕐</span>Open 24 hours, 7 days a week</div><div class="ci"><span class="ci-i">💰</span>$1.50–$5 per donut · Cash accepted</div><div class="ci"><span class="ci-i">📍</span>~13 mi · ~22 min · Old Town Portland</div></div>
-        <div class="card-stars">★★★★☆ Non-negotiable Portland stop</div>
-        <div class="card-links card-links-row"><a class="card-link" href="https://www.voodoodoughnut.com" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>Website</a><a class="card-link" href="https://maps.google.com/?q=Voodoo+Doughnut+Portland+OR" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>Maps</a><div style="position:relative;margin-left:auto"><button class="card-add-btn" onclick="toggleDayPicker(this)">+ Add to Itinerary</button><div class="day-picker"><button class="day-picker-item" onclick="addFromCard(this,'thu')">Thu May 21</button><button class="day-picker-item" onclick="addFromCard(this,'fri')">Fri May 22</button><button class="day-picker-item" onclick="addFromCard(this,'sat')">Sat May 23</button><button class="day-picker-item" onclick="addFromCard(this,'sun')">Sun May 24</button><button class="day-picker-item" onclick="addFromCard(this,'mon')">Mon May 25</button></div></div></div></div></div>
-
-      <!-- PIP'S ORIGINAL DOUGHNUTS -->
-      <div class="card" data-time="morning" data-cat="food" data-dist="near" data-title="🍩 Pip's Original Doughnuts & Chai" data-sub="Mini donuts made to order · 8AM–2PM weekdays">
-        <div class="card-drag-handle" title="Drag to itinerary">⠿</div>
-        <div class="card-img"><img src="https://images.unsplash.com/photo-1514517521153-1be72277b32f?auto=format&fit=crop&w=700&q=80" alt="Pip's Doughnuts"><div class="card-time">🌅 Morning only</div></div>
-        <div class="card-body"><div class="card-cat">Food</div><h3>Pip's Original Doughnuts & Chai</h3><p>Tiny, freshly made-to-order mini doughnuts and house-crafted chai lattes. The Honey & Sea Salt and Nutella are legendary. Family-owned, always-fresh, and almost always has a line worth joining.</p>
-        <div class="card-info"><div class="ci"><span class="ci-i">🕐</span>Mon–Fri 8 AM–2 PM · Sat–Sun 8 AM–4 PM</div><div class="ci"><span class="ci-i">💰</span>Small order of minis ~$4–7 · Chai ~$5–7</div><div class="ci"><span class="ci-i">💡</span>Go early — they sell out and sometimes close early</div><div class="ci"><span class="ci-i">📍</span>~16 mi · ~25 min · 4759 NE Fremont St, Portland</div></div>
-        <div class="card-stars">★★★★★ Worth the line every single time</div>
-        <div class="card-links card-links-row"><a class="card-link" href="https://www.pipsoriginalonline.com" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>Website</a><a class="card-link" href="https://maps.google.com/?q=Pip%27s+Original+Doughnuts+4759+NE+Fremont+St+Portland+OR" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>Maps</a><div style="position:relative;margin-left:auto"><button class="card-add-btn" onclick="toggleDayPicker(this)">+ Add to Itinerary</button><div class="day-picker"><button class="day-picker-item" onclick="addFromCard(this,'thu')">Thu May 21</button><button class="day-picker-item" onclick="addFromCard(this,'fri')">Fri May 22</button><button class="day-picker-item" onclick="addFromCard(this,'sat')">Sat May 23</button><button class="day-picker-item" onclick="addFromCard(this,'sun')">Sun May 24</button><button class="day-picker-item" onclick="addFromCard(this,'mon')">Mon May 25</button></div></div></div></div></div>
-
-      <!-- DINNER CRUISE -->
-      <div class="card" data-time="evening" data-cat="experience" data-dist="near" data-title="🚢 Willamette River Dinner Cruise" data-sub="~$85–120/person · 7 PM · Tom McCall Waterfront">
-        <div class="card-drag-handle" title="Drag to itinerary">⠿</div>
-        <div class="card-img"><img src="https://www.portlandspirit.com/wp-content/uploads/2022/05/Portland-Spirit-Willamette-River-Cruise.jpg" alt="Dinner Cruise" onerror="this.src='https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=700&q=80'"><div class="card-time">🌙 Evening only</div></div>
-        <div class="card-body"><div class="card-cat">Experience</div><h3>Willamette River Dinner Cruise</h3><p>Sunset on the Willamette with dinner, drinks, and the Portland skyline behind you. Portland Spirit runs the cruise — the perfect Saturday evening. Reserve well ahead.</p>
-        <div class="card-info"><div class="ci"><span class="ci-i">🕐</span>Typically 7 PM – 10 PM · Check Portland Spirit for schedule</div><div class="ci"><span class="ci-i">💰</span>~$85–$120 per person · Reservations required</div><div class="ci"><span class="ci-i">📍</span>~13 mi · ~20 min · Tom McCall Waterfront</div></div>
-        <div class="card-stars">★★★★☆ Book early — fills up on weekends</div>
-        <div class="card-links card-links-row"><a class="card-link" href="https://www.portlandspirit.com" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>Website</a><a class="card-link" href="https://maps.google.com/?q=Portland+Spirit+Tom+McCall+Waterfront" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>Maps</a><div style="position:relative;margin-left:auto"><button class="card-add-btn" onclick="toggleDayPicker(this)">+ Add to Itinerary</button><div class="day-picker"><button class="day-picker-item" onclick="addFromCard(this,'thu')">Thu May 21</button><button class="day-picker-item" onclick="addFromCard(this,'fri')">Fri May 22</button><button class="day-picker-item" onclick="addFromCard(this,'sat')">Sat May 23</button><button class="day-picker-item" onclick="addFromCard(this,'sun')">Sun May 24</button><button class="day-picker-item" onclick="addFromCard(this,'mon')">Mon May 25</button></div></div></div></div></div>
-
-      <!-- WILLAMETTE VALLEY -->
-      <div class="card" data-time="morning afternoon" data-cat="wine" data-dist="trek" data-title="🍷 Willamette Valley Wine Country" data-sub="~$20–65/winery · 35 mi trek · Dundee Hills">
-        <div class="card-drag-handle" title="Drag to itinerary">⠿</div>
-        <div class="card-img"><img src="https://www.oregonwine.org/wp-content/uploads/2021/06/Willamette-Valley-Vineyard-Aerial.jpg" alt="Willamette Valley" onerror="this.src='https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?auto=format&fit=crop&w=700&q=80'"><div class="card-time">🍷 Full Day Trip</div></div>
-        <div class="card-body"><div class="card-cat">Wine · Day Trip</div><h3>Willamette Valley Wine Country</h3><p>World-famous Pinot Noir across 700+ wineries in rolling Dundee Hills. May is Oregon Wine Month — special tastings, live music, and vineyard events all weekend long.</p>
-        <div class="card-info"><div class="ci"><span class="ci-i">🕐</span>Most tasting rooms 11 AM – 5 PM · Some require reservations</div><div class="ci"><span class="ci-i">💰</span>Flights $20–$65/winery · Guided tours ~$95–$120/person</div><div class="ci"><span class="ci-i">📍</span>~35 mi <span class="tag-trek">Trek</span> · ~45 min via OR-99W → Sherwood → Dundee</div></div>
-        <div class="card-stars">★★★★★ May = Oregon Wine Month!</div>
-        <div class="card-links card-links-row"><a class="card-link" href="https://www.oregonwine.org" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>Website</a><a class="card-link" href="https://maps.google.com/?q=Dundee+Hills+Willamette+Valley+OR" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>Maps</a><div style="position:relative;margin-left:auto"><button class="card-add-btn" onclick="toggleDayPicker(this)">+ Add to Itinerary</button><div class="day-picker"><button class="day-picker-item" onclick="addFromCard(this,'thu')">Thu May 21</button><button class="day-picker-item" onclick="addFromCard(this,'fri')">Fri May 22</button><button class="day-picker-item" onclick="addFromCard(this,'sat')">Sat May 23</button><button class="day-picker-item" onclick="addFromCard(this,'sun')">Sun May 24</button><button class="day-picker-item" onclick="addFromCard(this,'mon')">Mon May 25</button></div></div></div></div></div>
-
-      <!-- CANNON BEACH -->
-      <div class="card" data-time="morning afternoon" data-cat="coast outdoor" data-dist="trek" data-title="🌊 Cannon Beach" data-sub="Free · ~80 mi coast trek · 1.5h drive via Hwy 26">
-        <div class="card-drag-handle" title="Drag to itinerary">⠿</div>
-        <div class="card-img"><img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=700&q=80" alt="Cannon Beach Oregon"><div class="card-time">🌅 Full Day Trip</div></div>
-        <div class="card-body"><div class="card-cat">Coast · Day Trip</div><h3>Cannon Beach & Haystack Rock</h3><p>One of the world's 100 most beautiful places (National Geographic). Haystack Rock stands 235 ft tall with tidal pools full of starfish and puffins. The Goonies and Twilight were filmed here. Ecola State Park is steps away.</p>
-        <div class="card-info"><div class="ci"><span class="ci-i">🕐</span>Beach always open · Best at low tide for tidal pools</div><div class="ci"><span class="ci-i">💰</span>Beach <span class="tag-free">FREE</span> · Ecola State Park parking $5/day</div><div class="ci"><span class="ci-i">💡</span>Depart Portland by 8 AM on sunny weekends to beat traffic</div><div class="ci"><span class="ci-i">📍</span>~80 mi <span class="tag-trek">Trek</span> · ~1.5h via Hwy 26 W → Hwy 101 S</div></div>
-        <div class="card-stars">★★★★★ Named one of Earth's 100 most beautiful places</div>
-        <div class="card-links card-links-row"><a class="card-link" href="https://www.cannonbeach.org" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>Website</a><a class="card-link" href="https://maps.google.com/?q=Cannon+Beach+Oregon" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>Maps</a><div style="position:relative;margin-left:auto"><button class="card-add-btn" onclick="toggleDayPicker(this)">+ Add to Itinerary</button><div class="day-picker"><button class="day-picker-item" onclick="addFromCard(this,'thu')">Thu May 21</button><button class="day-picker-item" onclick="addFromCard(this,'fri')">Fri May 22</button><button class="day-picker-item" onclick="addFromCard(this,'sat')">Sat May 23</button><button class="day-picker-item" onclick="addFromCard(this,'sun')">Sun May 24</button><button class="day-picker-item" onclick="addFromCard(this,'mon')">Mon May 25</button></div></div></div></div></div>
-
-      <!-- ── FOOD CART PODS ── -->
-
-      <!-- CARTOPIA -->
-      <div class="card" data-time="afternoon evening" data-cat="food" data-dist="near" data-cuisine="american pizza korean" data-title="🛺 Cartopia Food Cart Pod" data-sub="SE 12th & Hawthorne · Late night · Beer garden">
-        <div class="card-drag-handle" title="Drag to itinerary">⠿</div>
-        <div class="card-img"><img src="https://images.unsplash.com/photo-1565123409695-7b5ef63a2efb?auto=format&fit=crop&w=700&q=80" alt="Cartopia food cart pod"><div class="card-time">🌙 Afternoon · Late Night</div></div>
-        <div class="card-body"><div class="card-cat">Food Cart Pod · SE Portland</div><h3>Cartopia</h3><p>One of Portland's oldest and most beloved pods — wood-fired pizza at Pyro Pizza, Belgian frites at Potato Champion (with 30+ dipping sauces), and Chicken and Guns. Beer garden on site. Open late.</p>
-        <div class="card-info"><div class="ci"><span class="ci-i">🕐</span>Daily ~noon–2 AM (hours vary by cart)</div><div class="ci"><span class="ci-i">💰</span>$8–15 per person per cart · Cash + cards</div><div class="ci"><span class="ci-i">🍽</span>Pyro Pizza · Potato Champion · Chicken and Guns · Bottle Rocket Burgers</div><div class="ci"><span class="ci-i">📍</span>~13 mi · ~20 min · SE 12th Ave & Hawthorne Blvd</div></div>
-        <div class="card-stars">★★★★★ Best late-night pod in Portland</div>
-        <div class="card-links card-links-row"><a class="card-link" href="https://www.travelportland.com/listing/cartopia/" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>Website</a><a class="card-link" href="https://maps.google.com/?q=Cartopia+SE+12th+Hawthorne+Portland+OR" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>Maps</a><div style="position:relative;margin-left:auto"><button class="card-add-btn" onclick="toggleDayPicker(this)">+ Add to Itinerary</button><div class="day-picker"><button class="day-picker-item" onclick="addFromCard(this,'thu')">Thu May 21</button><button class="day-picker-item" onclick="addFromCard(this,'fri')">Fri May 22</button><button class="day-picker-item" onclick="addFromCard(this,'sat')">Sat May 23</button><button class="day-picker-item" onclick="addFromCard(this,'sun')">Sun May 24</button><button class="day-picker-item" onclick="addFromCard(this,'mon')">Mon May 25</button></div></div></div></div></div>
-
-      <!-- HAWTHORNE ASYLUM -->
-      <div class="card" data-time="afternoon evening" data-cat="food" data-dist="near" data-cuisine="bbq american asian" data-title="🏭 Hawthorne Asylum Pod" data-sub="SE 10th & Madison · Fire pits · Matt's BBQ">
-        <div class="card-drag-handle" title="Drag to itinerary">⠿</div>
-        <div class="card-img"><img src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=700&q=80" alt="Hawthorne Asylum food pod"><div class="card-time">☀️ Afternoon / Evening</div></div>
-        <div class="card-body"><div class="card-cat">Food Cart Pod · SE Portland</div><h3>Hawthorne Asylum</h3><p>Large communal pod with fire pits, colorful murals, and some of Portland's best individual carts. Matt's BBQ serves Texas-style brisket that regularly gets national press. Desi PDX for modern Indian. Yoshi's Sushi for Japanese.</p>
-        <div class="card-info"><div class="ci"><span class="ci-i">🕐</span>Daily ~11 AM–9 PM (varies by cart)</div><div class="ci"><span class="ci-i">💰</span>$10–18 per person · Cards accepted</div><div class="ci"><span class="ci-i">🍽</span>Matt's BBQ · Desi PDX · Yoshi's Sushi · Gado Gado</div><div class="ci"><span class="ci-i">📍</span>~13 mi · ~20 min · SE 10th Ave & Madison St</div></div>
-        <div class="card-stars">★★★★★ Matt's BBQ alone is worth the trip</div>
-        <div class="card-links card-links-row"><a class="card-link" href="https://maps.google.com/?q=Hawthorne+Asylum+Portland+OR" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>Maps</a><div style="position:relative;margin-left:auto"><button class="card-add-btn" onclick="toggleDayPicker(this)">+ Add to Itinerary</button><div class="day-picker"><button class="day-picker-item" onclick="addFromCard(this,'thu')">Thu May 21</button><button class="day-picker-item" onclick="addFromCard(this,'fri')">Fri May 22</button><button class="day-picker-item" onclick="addFromCard(this,'sat')">Sat May 23</button><button class="day-picker-item" onclick="addFromCard(this,'sun')">Sun May 24</button><button class="day-picker-item" onclick="addFromCard(this,'mon')">Mon May 25</button></div></div></div></div></div>
-
-      <!-- CART BLOCKS DOWNTOWN -->
-      <div class="card" data-time="morning afternoon" data-cat="food" data-dist="near" data-cuisine="american asian korean" data-title="🏙 The Cart Blocks" data-sub="SW Park & Ankeny · Downtown · Breakfast sandwiches">
-        <div class="card-drag-handle" title="Drag to itinerary">⠿</div>
-        <div class="card-img"><img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=700&q=80" alt="Cart Blocks downtown Portland"><div class="card-time">🌅 Morning / Afternoon</div></div>
-        <div class="card-body"><div class="card-cat">Food Cart Pod · Downtown</div><h3>The Cart Blocks</h3><p>Downtown Portland's most accessible pod — steps from Powell's and the Pearl District. Famous for Fried Egg I'm in Love's sourdough breakfast sandwiches, Stretch the Noodle's hand-pulled Chinese noodles, and Kim Jong Grillin's Korean BBQ.</p>
-        <div class="card-info"><div class="ci"><span class="ci-i">🕐</span>Mon–Fri ~8 AM–3 PM · Sat–Sun ~10 AM–4 PM</div><div class="ci"><span class="ci-i">💰</span>$8–14 per person · Cards accepted</div><div class="ci"><span class="ci-i">🍽</span>Fried Egg I'm in Love · Stretch the Noodle · Kim Jong Grillin'</div><div class="ci"><span class="ci-i">📍</span>~12 mi · ~20 min · SW Park Ave & Ankeny St, Downtown</div></div>
-        <div class="card-stars">★★★★☆ Best downtown lunch stop</div>
-        <div class="card-links card-links-row"><a class="card-link" href="https://maps.google.com/?q=Cart+Blocks+SW+Park+Ave+Ankeny+Portland+OR" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>Maps</a><div style="position:relative;margin-left:auto"><button class="card-add-btn" onclick="toggleDayPicker(this)">+ Add to Itinerary</button><div class="day-picker"><button class="day-picker-item" onclick="addFromCard(this,'thu')">Thu May 21</button><button class="day-picker-item" onclick="addFromCard(this,'fri')">Fri May 22</button><button class="day-picker-item" onclick="addFromCard(this,'sat')">Sat May 23</button><button class="day-picker-item" onclick="addFromCard(this,'sun')">Sun May 24</button><button class="day-picker-item" onclick="addFromCard(this,'mon')">Mon May 25</button></div></div></div></div></div>
-
-      <!-- CORE POD -->
-      <div class="card" data-time="afternoon" data-cat="food" data-dist="near" data-cuisine="asian american" data-title="🏠 CORE Food Cart Pod" data-sub="SE 82nd Ave · Covered seating · Rain-friendly">
-        <div class="card-drag-handle" title="Drag to itinerary">⠿</div>
-        <div class="card-img"><img src="https://images.unsplash.com/photo-1466978913421-dad2ebd01d17?auto=format&fit=crop&w=700&q=80" alt="CORE food cart pod"><div class="card-time">☀️ Afternoon</div></div>
-        <div class="card-body"><div class="card-cat">Food Cart Pod · SE Portland</div><h3>CORE — Collective Oregon Eateries</h3><p>One of Portland's largest and most diverse pods with covered outdoor + cozy indoor seating — great in any weather. 36,000 sq ft with 20+ carts. Vietnamese Broken Rice, Korean Chicken &amp; Wings, seafood boil at Drip'n'Crab, and Russian piroshkis.</p>
-        <div class="card-info"><div class="ci"><span class="ci-i">🕐</span>Tue–Sun 11 AM–8 PM</div><div class="ci"><span class="ci-i">💰</span>$8–18 per person · Cards accepted</div><div class="ci"><span class="ci-i">🍽</span>Broken Rice (Vietnamese) · Chicken & Wings · Drip'n'Crab · Habanero Burrito</div><div class="ci"><span class="ci-i">📍</span>~14 mi · ~23 min · 3612 SE 82nd Ave</div></div>
-        <div class="card-stars">★★★★☆ Perfect rainy day pod — fully covered</div>
-        <div class="card-links card-links-row"><a class="card-link" href="https://maps.google.com/?q=CORE+Collective+Oregon+Eateries+3612+SE+82nd+Portland" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>Maps</a><div style="position:relative;margin-left:auto"><button class="card-add-btn" onclick="toggleDayPicker(this)">+ Add to Itinerary</button><div class="day-picker"><button class="day-picker-item" onclick="addFromCard(this,'thu')">Thu May 21</button><button class="day-picker-item" onclick="addFromCard(this,'fri')">Fri May 22</button><button class="day-picker-item" onclick="addFromCard(this,'sat')">Sat May 23</button><button class="day-picker-item" onclick="addFromCard(this,'sun')">Sun May 24</button><button class="day-picker-item" onclick="addFromCard(this,'mon')">Mon May 25</button></div></div></div></div></div>
-
-      <!-- EL MERCADO -->
-      <div class="card" data-time="afternoon evening" data-cat="food" data-dist="near" data-cuisine="latin mexican" data-title="🌮 El Mercado Food Pod" data-sub="Foster-Powell · Latin American hub · Tlayudas & arepas">
-        <div class="card-drag-handle" title="Drag to itinerary">⠿</div>
-        <div class="card-img"><img src="https://images.unsplash.com/photo-1565299585323-38d6b0865b47?auto=format&fit=crop&w=700&q=80" alt="El Mercado Latin food pod"><div class="card-time">☀️ Afternoon / Evening</div></div>
-        <div class="card-body"><div class="card-cat">Food Cart Pod · Foster-Powell</div><h3>El Mercado</h3><p>A hub of Latinx culture and some of Portland's most delicious Latin American cuisine. Colombian arepas from Que Bacano, enormous dinner-plate tlayudas from Tierra Del Sol, and Yucatecan and Cuban flavors. Vibrant, community-driven atmosphere.</p>
-        <div class="card-info"><div class="ci"><span class="ci-i">🕐</span>Wed–Sun ~noon–8 PM (check individual carts)</div><div class="ci"><span class="ci-i">💰</span>$8–15 per person · Cash + cards</div><div class="ci"><span class="ci-i">🍽</span>Que Bacano (arepas) · Tierra Del Sol (tlayudas) · Cuban & Yucatecan carts</div><div class="ci"><span class="ci-i">📍</span>~12 mi · ~22 min · SE Foster-Powell neighborhood</div></div>
-        <div class="card-stars">★★★★★ Authentic Latin American you won't find elsewhere</div>
-        <div class="card-links card-links-row"><a class="card-link" href="https://maps.google.com/?q=El+Mercado+Portland+OR+Foster+Powell" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>Maps</a><div style="position:relative;margin-left:auto"><button class="card-add-btn" onclick="toggleDayPicker(this)">+ Add to Itinerary</button><div class="day-picker"><button class="day-picker-item" onclick="addFromCard(this,'thu')">Thu May 21</button><button class="day-picker-item" onclick="addFromCard(this,'fri')">Fri May 22</button><button class="day-picker-item" onclick="addFromCard(this,'sat')">Sat May 23</button><button class="day-picker-item" onclick="addFromCard(this,'sun')">Sun May 24</button><button class="day-picker-item" onclick="addFromCard(this,'mon')">Mon May 25</button></div></div></div></div></div>
-
-      <!-- NEW WONDERLOVE -->
-      <div class="card" data-time="afternoon evening" data-cat="food" data-dist="near" data-cuisine="asian american vegan" data-title="✨ New Wonderlove Pod" data-sub="Central Eastside · Rooftop skyline views · Live music">
-        <div class="card-drag-handle" title="Drag to itinerary">⠿</div>
-        <div class="card-img"><img src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=700&q=80" alt="New Wonderlove food pod"><div class="card-time">☀️ Afternoon / Eve</div></div>
-        <div class="card-body"><div class="card-cat">Food Cart Pod · Central Eastside</div><h3>New Wonderlove</h3><p>Half a city block of cool vibes, rooftop skyline views, live murals, and music. Guyanese Bake on the Run (featured on Top Chef), Indian-inspired Platter Division stuffed parathas, Belgian waffles from Honeycuspe, and incredible Korean fried chicken at Frybaby.</p>
-        <div class="card-info"><div class="ci"><span class="ci-i">🕐</span>Daily ~noon–9 PM</div><div class="ci"><span class="ci-i">💰</span>$9–16 per person · Cards accepted</div><div class="ci"><span class="ci-i">🍽</span>Bake on the Run · Platter Division · Honeycuspe · Frybaby (Korean fried chicken)</div><div class="ci"><span class="ci-i">📍</span>~13 mi · ~20 min · Central Eastside</div></div>
-        <div class="card-stars">★★★★★ Rooftop Portland skyline views are unreal</div>
-        <div class="card-links card-links-row"><a class="card-link" href="https://maps.google.com/?q=New+Wonderlove+Portland+OR" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>Maps</a><div style="position:relative;margin-left:auto"><button class="card-add-btn" onclick="toggleDayPicker(this)">+ Add to Itinerary</button><div class="day-picker"><button class="day-picker-item" onclick="addFromCard(this,'thu')">Thu May 21</button><button class="day-picker-item" onclick="addFromCard(this,'fri')">Fri May 22</button><button class="day-picker-item" onclick="addFromCard(this,'sat')">Sat May 23</button><button class="day-picker-item" onclick="addFromCard(this,'sun')">Sun May 24</button><button class="day-picker-item" onclick="addFromCard(this,'mon')">Mon May 25</button></div></div></div></div></div>
-
-      <!-- HINTERLAND -->
-      <div class="card" data-time="afternoon evening" data-cat="food" data-dist="near" data-cuisine="bbq american" data-title="🌿 Hinterland Pod" data-sub="NE Portland · Matt's BBQ Tacos · Cocktail pairings">
-        <div class="card-drag-handle" title="Drag to itinerary">⠿</div>
-        <div class="card-img"><img src="https://images.unsplash.com/photo-1529193591184-b1d58069ecdd?auto=format&fit=crop&w=700&q=80" alt="Hinterland food pod"><div class="card-time">☀️ Afternoon / Evening</div></div>
-        <div class="card-body"><div class="card-cat">Food Cart Pod · NE Portland</div><h3>Hinterland</h3><p>An upscale pod near Mt. Tabor Park with a heated, sealed-off bar patio for year-round use. Matt's BBQ Tacos, Paper Plane burgers & brats, and a cocktail list that suggests pairings for every cart. Also serves brunch.</p>
-        <div class="card-info"><div class="ci"><span class="ci-i">🕐</span>Tue–Sun ~noon–10 PM · Bar open late</div><div class="ci"><span class="ci-i">💰</span>$10–18 per person · Cards accepted</div><div class="ci"><span class="ci-i">🍽</span>Matt's BBQ Tacos · Paper Plane (burgers & brats) · On-site cocktail bar</div><div class="ci"><span class="ci-i">📍</span>~14 mi · ~23 min · NE Portland near Mt. Tabor</div></div>
-        <div class="card-stars">★★★★★ Cocktail pairings make this one special</div>
-        <div class="card-links card-links-row"><a class="card-link" href="https://maps.google.com/?q=Hinterland+food+pod+Portland+OR" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>Maps</a><div style="position:relative;margin-left:auto"><button class="card-add-btn" onclick="toggleDayPicker(this)">+ Add to Itinerary</button><div class="day-picker"><button class="day-picker-item" onclick="addFromCard(this,'thu')">Thu May 21</button><button class="day-picker-item" onclick="addFromCard(this,'fri')">Fri May 22</button><button class="day-picker-item" onclick="addFromCard(this,'sat')">Sat May 23</button><button class="day-picker-item" onclick="addFromCard(this,'sun')">Sun May 24</button><button class="day-picker-item" onclick="addFromCard(this,'mon')">Mon May 25</button></div></div></div></div></div>
-
-      <!-- 28TH PARALLEL -->
-      <div class="card" data-time="afternoon evening" data-cat="food" data-dist="near" data-cuisine="asian american" data-title="🍺 28th Parallel Food & Beer Carts" data-sub="NE 28th & Glisan · Beer cart on site · Near Migration Brewing">
-        <div class="card-drag-handle" title="Drag to itinerary">⠿</div>
-        <div class="card-img"><img src="https://images.unsplash.com/photo-1565299585323-38d6b0865b47?auto=format&fit=crop&w=700&q=80" alt="28th Parallel Portland"><div class="card-time">☀️ Afternoon / Evening</div></div>
-        <div class="card-body"><div class="card-cat">Food Cart Pod · Kerns / NE Portland</div><h3>28th Parallel Food & Beer Carts</h3><p>A hidden-gem pod off NE 28th & Glisan with international flavors, clean picnic seating, and an on-site beer cart. Shawarma House is legendary — best chicken gyro in Portland. Kyrgyz stew, chopped cheese, crispy tacos, and cold local pours from Pour Choice PDX. Quick drive from OMSI.</p>
-        <div class="card-info"><div class="ci"><span class="ci-i">🕐</span>Daily 11 AM – 10 PM (check individual carts)</div><div class="ci"><span class="ci-i">💰</span>$8–15 per person · Cash + cards</div><div class="ci"><span class="ci-i">🍽</span>Shawarma House · Chopped Cheese PDX · Thai Twist Sushi · Pour Choice (beer)</div><div class="ci"><span class="ci-i">📍</span>~16 mi · ~25 min · 2810 NE Glisan St (near Migration Brewing)</div></div>
-        <div class="card-stars">★★★★★ Best shawarma in Portland — locals swear by it</div>
-        <div class="card-links card-links-row"><a class="card-link" href="https://www.travelportland.com/food-carts/28th-parallel-food-beer-carts/" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>Website</a><a class="card-link" href="https://maps.google.com/?q=28th+Parallel+Food+Beer+Carts+2810+NE+Glisan+Portland+OR" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>Maps</a><div style="position:relative;margin-left:auto"><button class="card-add-btn" onclick="toggleDayPicker(this)">+ Add to Itinerary</button><div class="day-picker"><button class="day-picker-item" onclick="addFromCard(this,'thu')">Thu May 21</button><button class="day-picker-item" onclick="addFromCard(this,'fri')">Fri May 22</button><button class="day-picker-item" onclick="addFromCard(this,'sat')">Sat May 23</button><button class="day-picker-item" onclick="addFromCard(this,'sun')">Sun May 24</button><button class="day-picker-item" onclick="addFromCard(this,'mon')">Mon May 25</button></div></div></div></div></div>
-
-      <!-- ALA CARTS -->
-      <div class="card" data-time="afternoon" data-cat="food" data-dist="near" data-cuisine="asian mexican" data-title="🌏 Ala Carts Pod" data-sub="SE Gateway District · 10175 SE Stark St · Cajun & Asian">
-        <div class="card-drag-handle" title="Drag to itinerary">⠿</div>
-        <div class="card-img"><img src="https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=700&q=80" alt="Ala Carts Portland"><div class="card-time">☀️ Afternoon</div></div>
-        <div class="card-body"><div class="card-cat">Food Cart Pod · SE Gateway District</div><h3>Ala Carts</h3><p>Community-favourite pod in SE Portland's Gateway district with standout Indian and Thai carts — generous portions at budget prices. Le Bistro Montage Ala Cart (the beloved Cajun restaurant reborn as a cart) makes this a must-visit. Easy parking, never too crowded.</p>
-        <div class="card-info"><div class="ci"><span class="ci-i">🕐</span>Tue–Sun ~11 AM–8 PM (varies by cart)</div><div class="ci"><span class="ci-i">💰</span>$5–12 per person — best value pod in Portland</div><div class="ci"><span class="ci-i">🍽</span>Le Bistro Montage Ala Cart (Cajun) · Indian · Thai · Mexican</div><div class="ci"><span class="ci-i">📍</span>~15 mi · ~25 min · 10175 SE Stark St, Gateway District</div></div>
-        <div class="card-stars">★★★★☆ Hidden gem — huge portions, great prices</div>
-        <div class="card-links card-links-row"><a class="card-link" href="https://www.travelportland.com/food-carts/ala-carts/" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>Website</a><a class="card-link" href="https://maps.google.com/?q=Ala+Carts+10175+SE+Stark+St+Portland+OR" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>Maps</a><div style="position:relative;margin-left:auto"><button class="card-add-btn" onclick="toggleDayPicker(this)">+ Add to Itinerary</button><div class="day-picker"><button class="day-picker-item" onclick="addFromCard(this,'thu')">Thu May 21</button><button class="day-picker-item" onclick="addFromCard(this,'fri')">Fri May 22</button><button class="day-picker-item" onclick="addFromCard(this,'sat')">Sat May 23</button><button class="day-picker-item" onclick="addFromCard(this,'sun')">Sun May 24</button><button class="day-picker-item" onclick="addFromCard(this,'mon')">Mon May 25</button></div></div></div></div></div>
-
-      <!-- PROST MARKETPLACE -->
-      <div class="card" data-time="afternoon evening" data-cat="food" data-dist="near" data-cuisine="bbq american korean mexican" data-title="🍺 Prost Marketplace" data-sub="4233 N Mississippi Ave · Portland's best pod · German biergarten">
-        <div class="card-drag-handle" title="Drag to itinerary">⠿</div>
-        <div class="card-img"><img src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=700&q=80" alt="Prost Marketplace Portland"><div class="card-time">☀️ Afternoon / Evening</div></div>
-        <div class="card-body"><div class="card-cat">Food Cart Pod · N Mississippi Ave</div><h3>Prost Marketplace</h3><p>Voted Portland's #1 food cart pod by The Oregonian — and called the "superteam" of Portland pods by Willamette Week. All-weather covered and heated seating. Matt's BBQ brisket, Koi Fusion Korean-Mexican, Fried Egg I'm in Love, and Mole Mole are the current standouts.</p>
-        <div class="card-info"><div class="ci"><span class="ci-i">🕐</span>Daily 11 AM – 9 PM</div><div class="ci"><span class="ci-i">💰</span>$10–18 per person · Cards accepted</div><div class="ci"><span class="ci-i">🍽</span>Matt's BBQ · Koi Fusion · Fried Egg I'm in Love · Mole Mole · Burger Stevens</div><div class="ci"><span class="ci-i">📍</span>~17 mi · ~27 min · 4233 N Mississippi Ave (next to Prost! bar)</div></div>
-        <div class="card-stars">★★★★★ Portland's #1 pod — The Oregonian</div>
-        <div class="card-links card-links-row"><a class="card-link" href="https://www.travelportland.com/food-carts/prost-marketplace/" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>Website</a><a class="card-link" href="https://maps.google.com/?q=Prost+Marketplace+4233+N+Mississippi+Ave+Portland+OR" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>Maps</a><div style="position:relative;margin-left:auto"><button class="card-add-btn" onclick="toggleDayPicker(this)">+ Add to Itinerary</button><div class="day-picker"><button class="day-picker-item" onclick="addFromCard(this,'thu')">Thu May 21</button><button class="day-picker-item" onclick="addFromCard(this,'fri')">Fri May 22</button><button class="day-picker-item" onclick="addFromCard(this,'sat')">Sat May 23</button><button class="day-picker-item" onclick="addFromCard(this,'sun')">Sun May 24</button><button class="day-picker-item" onclick="addFromCard(this,'mon')">Mon May 25</button></div></div></div></div></div>
-
-      <!-- MIDTOWN BEER GARDEN -->
-      <div class="card" data-time="morning afternoon" data-cat="food" data-dist="near" data-cuisine="asian american korean" data-title="🏛 Midtown Beer Garden" data-sub="SW 5th Ave · Portland's oldest pod (1980s) · Downtown">
-        <div class="card-drag-handle" title="Drag to itinerary">⠿</div>
-        <div class="card-img"><img src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=700&q=80" alt="Midtown Beer Garden Portland"><div class="card-time">🌅 Lunch / Afternoon</div></div>
-        <div class="card-body"><div class="card-cat">Food Cart Pod · Downtown SW Portland</div><h3>Midtown Beer Garden</h3><p>Portland's oldest food cart pod — running since the early 1980s and reinvented as a 300-seat beer garden after a 2023 renovation. Steps from the Pearl District. Bing Mi's savory jianbing crepes, Stretch the Noodle's hand-pulled noodles, and Tokyo Sando's Japanese sandwiches lead the lineup.</p>
-        <div class="card-info"><div class="ci"><span class="ci-i">🕐</span>Mon–Fri ~8 AM–3 PM · Sat–Sun ~10 AM–5 PM</div><div class="ci"><span class="ci-i">💰</span>$8–14 per person · Cards accepted</div><div class="ci"><span class="ci-i">🍽</span>Bing Mi (Chinese jianbing) · Stretch the Noodle · Tokyo Sando · 300-seat beer garden</div><div class="ci"><span class="ci-i">📍</span>~12 mi · ~20 min · SW 5th Ave, Downtown Portland</div></div>
-        <div class="card-stars">★★★★☆ Portland's oldest pod — operating since the 1980s</div>
-        <div class="card-links card-links-row"><a class="card-link" href="https://maps.google.com/?q=Midtown+Beer+Garden+SW+5th+Ave+Portland+OR" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>Maps</a><div style="position:relative;margin-left:auto"><button class="card-add-btn" onclick="toggleDayPicker(this)">+ Add to Itinerary</button><div class="day-picker"><button class="day-picker-item" onclick="addFromCard(this,'thu')">Thu May 21</button><button class="day-picker-item" onclick="addFromCard(this,'fri')">Fri May 22</button><button class="day-picker-item" onclick="addFromCard(this,'sat')">Sat May 23</button><button class="day-picker-item" onclick="addFromCard(this,'sun')">Sun May 24</button><button class="day-picker-item" onclick="addFromCard(this,'mon')">Mon May 25</button></div></div></div></div></div>
-
-      <!-- MISSISSIPPI MARKETPLACE -->
-      <div class="card" data-time="morning afternoon" data-cat="food" data-dist="near" data-cuisine="american bbq mexican" data-title="🛖 Mississippi Marketplace" data-sub="4237 N Mississippi Ave · Portland's first pod (2009) · Next to Prost!">
-        <div class="card-drag-handle" title="Drag to itinerary">⠿</div>
-        <div class="card-img"><img src="https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=700&q=80" alt="Mississippi Marketplace Portland"><div class="card-time">🌅 Morning / Afternoon</div></div>
-        <div class="card-body"><div class="card-cat">Food Cart Pod · N Mississippi Ave</div><h3>Mississippi Marketplace</h3><p>Portland's first purpose-built food cart lot — opened 2009 and credited with sparking the entire city's pod boom. On the same block as Prost Marketplace and the legendary Prost! bar. Eco-friendly design with bike corral and Japanese lace leaf maples. A true slice of Portland history.</p>
-        <div class="card-info"><div class="ci"><span class="ci-i">🕐</span>Daily ~8 AM–7 PM (varies by cart)</div><div class="ci"><span class="ci-i">💰</span>$7–15 per person · Cash + cards</div><div class="ci"><span class="ci-i">🍽</span>Rotating seasonal carts · Cajun · BBQ · Mexican · next to Prost! bar</div><div class="ci"><span class="ci-i">📍</span>~17 mi · ~27 min · 4237 N Mississippi Ave (same block as Prost Marketplace)</div></div>
-        <div class="card-stars">★★★★☆ The pod that started Portland's food cart revolution</div>
-        <div class="card-links card-links-row"><a class="card-link" href="https://maps.google.com/?q=Mississippi+Marketplace+4237+N+Mississippi+Ave+Portland+OR" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>Maps</a><div style="position:relative;margin-left:auto"><button class="card-add-btn" onclick="toggleDayPicker(this)">+ Add to Itinerary</button><div class="day-picker"><button class="day-picker-item" onclick="addFromCard(this,'thu')">Thu May 21</button><button class="day-picker-item" onclick="addFromCard(this,'fri')">Fri May 22</button><button class="day-picker-item" onclick="addFromCard(this,'sat')">Sat May 23</button><button class="day-picker-item" onclick="addFromCard(this,'sun')">Sun May 24</button><button class="day-picker-item" onclick="addFromCard(this,'mon')">Mon May 25</button></div></div></div></div></div>
-
-
-    </div>
-  </div>
-  <footer><div class="footer-logo">OREGON TRIP</div><div>May 21–25 · 2025 · Tigard & Portland, Oregon</div></footer>
-</div>
-
-<!-- PAGE: ITINERARY -->
-<div id="page-itinerary" class="page">
-  <div class="wrap">
-    <div class="sec-label">Day by day</div>
-    <div class="sec-title">THE <em>Itinerary</em></div>
-    <span class="itin-hint">↕ Drag cards to reorder · Drag explore cards here · × to remove</span>
-    <div class="reddit-callout">
-      <div><div class="rc-tag">💡 Ideas List</div><div class="rc-title">Portland Things To Do — Reddit Edition</div><div class="rc-sub">A crowdsourced spreadsheet of 100+ Portland activities. Browse for extra inspiration and drag anything you like into your itinerary.</div></div>
-      <div class="rc-picks"><div class="rc-pick">🎳 Punch Bowl Social — bowling, cocktails, games</div><div class="rc-pick">🛁 Yacht Tubs — hot tub boat on the river · $399/2hrs</div><div class="rc-pick">🎮 Ground Kontrol — arcade bar · free play 2nd Thu</div><div class="rc-pick">🍰 Toasted S'mores Bar — torched gourmet s'mores, Wed–Sun</div></div>
-      <a class="rc-link" href="https://docs.google.com/spreadsheets/d/19HaN6KTVgQht60_qbsFLqsRihh600uK2pxxwwc9Jv6U/edit" target="_blank">View Full List →</a>
-    </div>
-    <div class="itin-grid" id="itinCols">
-      <div class="day-col" data-day="thu" ondragover="onDO(event)" ondrop="onDrop(event,this)" ondragleave="onDL(event)">
-        <div class="day-head"><div class="day-date">May 21</div><div class="day-name">Thursday</div></div>
-        <div class="ic" draggable="true" ondragstart="onDS(event)"><button class="ic-remove" onclick="removeIC(this)" title="Remove">×</button><button class="ic-edit" onclick="openEdit(this)" title="Edit">✎</button><span class="dh">⠿</span><div class="ic-title">✈️ Arrive at PDX</div><div class="ic-sub">Pick up Avis rental car</div><span class="ic-chip">🌙 Evening</span></div>
-        <div class="ic" draggable="true" ondragstart="onDS(event)"><button class="ic-remove" onclick="removeIC(this)" title="Remove">×</button><button class="ic-edit" onclick="openEdit(this)" title="Edit">✎</button><span class="dh">⠿</span><div class="ic-title">🏡 Check In & Get Settled</div><div class="ic-sub">Tigard Airbnb · Smart lock · Orange doors</div><span class="ic-chip">🌙 Evening</span></div>
-        <div class="ic" draggable="true" ondragstart="onDS(event)"><button class="ic-remove" onclick="removeIC(this)" title="Remove">×</button><button class="ic-edit" onclick="openEdit(this)" title="Edit">✎</button><span class="dh">⠿</span><div class="ic-title">🍽 Grab Dinner Nearby</div><div class="ic-sub">Explore Tigard or order in</div><span class="ic-chip">🌙 Evening</span></div>
-        <div class="day-empty"><div class="day-empty-icon">✦</div><div class="day-empty-text">Drop a stop here<br>or tap + below</div></div>
-        <button class="add-btn" onclick="openM('thu')">+ Add stop</button>
-      </div>
-      <div class="day-col" data-day="fri" ondragover="onDO(event)" ondrop="onDrop(event,this)" ondragleave="onDL(event)">
-        <div class="day-head"><div class="day-date">May 22</div><div class="day-name">Friday</div></div>
-        <div class="ic" draggable="true" ondragstart="onDS(event)"><button class="ic-remove" onclick="removeIC(this)" title="Remove">×</button><button class="ic-edit" onclick="openEdit(this)" title="Edit">✎</button><span class="dh">⠿</span><div class="ic-title">🏔 Mirror Lake Hike</div><div class="ic-sub">Mirror Lake Loop · alltrails.com · ~1.5h drive</div><span class="ic-chip">🌅 Morning</span></div>
-        <div class="ic" draggable="true" ondragstart="onDS(event)"><button class="ic-remove" onclick="removeIC(this)" title="Remove">×</button><button class="ic-edit" onclick="openEdit(this)" title="Edit">✎</button><span class="dh">⠿</span><div class="ic-title">🌹 Rose Garden</div><div class="ic-sub">Free · ~11 mi · Peak bloom in late May!</div><span class="ic-chip">☀️ Afternoon</span></div>
-        <div class="ic" draggable="true" ondragstart="onDS(event)"><button class="ic-remove" onclick="removeIC(this)" title="Remove">×</button><button class="ic-edit" onclick="openEdit(this)" title="Edit">✎</button><span class="dh">⠿</span><div class="ic-title">🍺 28th Parallel Pod</div><div class="ic-sub">NE Glisan · Best shawarma in Portland · Beer cart</div><span class="ic-chip">🌙 Evening</span></div>
-        <div class="day-empty"><div class="day-empty-icon">✦</div><div class="day-empty-text">Drop a stop here<br>or tap + below</div></div>
-        <button class="add-btn" onclick="openM('fri')">+ Add stop</button>
-      </div>
-      <div class="day-col" data-day="sat" ondragover="onDO(event)" ondrop="onDrop(event,this)" ondragleave="onDL(event)">
-        <div class="day-head"><div class="day-date">May 23</div><div class="day-name">Saturday</div></div>
-        <div class="ic" draggable="true" ondragstart="onDS(event)"><button class="ic-remove" onclick="removeIC(this)" title="Remove">×</button><button class="ic-edit" onclick="openEdit(this)" title="Edit">✎</button><span class="dh">⠿</span><div class="ic-title">🏞 Columbia River Gorge</div><div class="ic-sub">Dog Mountain Area · ~20 min · Buy pass in advance</div><span class="ic-chip">🌅 All Day</span></div>
-        <div class="ic" draggable="true" ondragstart="onDS(event)"><button class="ic-remove" onclick="removeIC(this)" title="Remove">×</button><button class="ic-edit" onclick="openEdit(this)" title="Edit">✎</button><span class="dh">⠿</span><div class="ic-title">💦 Waterfalls & Kayaking</div><div class="ic-sub">Kayak rentals at Alder Creek · 1515 SE Water Ave</div><span class="ic-chip">☀️ Afternoon</span></div>
-        <div class="ic" draggable="true" ondragstart="onDS(event)"><button class="ic-remove" onclick="removeIC(this)" title="Remove">×</button><button class="ic-edit" onclick="openEdit(this)" title="Edit">✎</button><span class="dh">⠿</span><div class="ic-title">🛺 Cartopia Food Pod</div><div class="ic-sub">SE 12th & Hawthorne · Pyro Pizza · Late night</div><span class="ic-chip">🌙 Evening</span></div>
-        <div class="day-empty"><div class="day-empty-icon">✦</div><div class="day-empty-text">Drop a stop here<br>or tap + below</div></div>
-        <button class="add-btn" onclick="openM('sat')">+ Add stop</button>
-      </div>
-      <div class="day-col" data-day="sun" ondragover="onDO(event)" ondrop="onDrop(event,this)" ondragleave="onDL(event)">
-        <div class="day-head"><div class="day-date">May 24</div><div class="day-name">Sunday</div></div>
-        <div class="ic" draggable="true" ondragstart="onDS(event)"><button class="ic-remove" onclick="removeIC(this)" title="Remove">×</button><button class="ic-edit" onclick="openEdit(this)" title="Edit">✎</button><span class="dh">⠿</span><div class="ic-title">🎨 Alberta Arts District</div><div class="ic-sub">Galleries, murals, local shops · ~14 min drive</div><span class="ic-chip">🌅 Morning</span></div>
-        <div class="ic" draggable="true" ondragstart="onDS(event)"><button class="ic-remove" onclick="removeIC(this)" title="Remove">×</button><button class="ic-edit" onclick="openEdit(this)" title="Edit">✎</button><span class="dh">⠿</span><div class="ic-title">📚 Powell's City of Books</div><div class="ic-sub">~5 min from city · Free to browse</div><span class="ic-chip">☀️ Afternoon</span></div>
-        <div class="ic" draggable="true" ondragstart="onDS(event)"><button class="ic-remove" onclick="removeIC(this)" title="Remove">×</button><button class="ic-edit" onclick="openEdit(this)" title="Edit">✎</button><span class="dh">⠿</span><div class="ic-title">🍺 Prost Marketplace</div><div class="ic-sub">Portland's #1 pod · N Mississippi · Matt's BBQ</div><span class="ic-chip">☀️ Afternoon</span></div>
-        <div class="ic" draggable="true" ondragstart="onDS(event)"><button class="ic-remove" onclick="removeIC(this)" title="Remove">×</button><button class="ic-edit" onclick="openEdit(this)" title="Edit">✎</button><span class="dh">⠿</span><div class="ic-title">🍦 Salt & Straw Ice Cream</div><div class="ic-sub">Unique seasonal flavors · Watch for lines!</div><span class="ic-chip">☀️ Afternoon</span></div>
-        <div class="day-empty"><div class="day-empty-icon">✦</div><div class="day-empty-text">Drop a stop here<br>or tap + below</div></div>
-        <button class="add-btn" onclick="openM('sun')">+ Add stop</button>
-      </div>
-      <div class="day-col" data-day="mon" ondragover="onDO(event)" ondrop="onDrop(event,this)" ondragleave="onDL(event)">
-        <div class="day-head"><div class="day-date">May 25</div><div class="day-name">Monday</div></div>
-        <div class="ic" draggable="true" ondragstart="onDS(event)"><button class="ic-remove" onclick="removeIC(this)" title="Remove">×</button><button class="ic-edit" onclick="openEdit(this)" title="Edit">✎</button><span class="dh">⠿</span><div class="ic-title">😭 Back to Reality</div><div class="ic-sub">"Oh there goes gravity" — Eminem</div><span class="ic-chip">🌅 Morning</span></div>
-        <div class="ic" draggable="true" ondragstart="onDS(event)"><button class="ic-remove" onclick="removeIC(this)" title="Remove">×</button><button class="ic-edit" onclick="openEdit(this)" title="Edit">✎</button><span class="dh">⠿</span><div class="ic-title">🥞 Final Brunch</div><div class="ic-sub">Slow last morning at a Portland café</div><span class="ic-chip">🌅 Morning</span></div>
-        <div class="ic" draggable="true" ondragstart="onDS(event)"><button class="ic-remove" onclick="removeIC(this)" title="Remove">×</button><button class="ic-edit" onclick="openEdit(this)" title="Edit">✎</button><span class="dh">⠿</span><div class="ic-title">🍩 Pip's Doughnuts</div><div class="ic-sub">4759 NE Fremont · Open 8 AM · Go early!</div><span class="ic-chip">🌅 Morning</span></div>
-        <div class="ic" draggable="true" ondragstart="onDS(event)"><button class="ic-remove" onclick="removeIC(this)" title="Remove">×</button><button class="ic-edit" onclick="openEdit(this)" title="Edit">✎</button><span class="dh">⠿</span><div class="ic-title">🚗 Return Car at PDX</div><div class="ic-sub">Avis · by 10 PM · BOO 👋</div><span class="ic-chip">🌙 Evening</span></div>
-        <div class="day-empty"><div class="day-empty-icon">✦</div><div class="day-empty-text">Drop a stop here<br>or tap + below</div></div>
-        <button class="add-btn" onclick="openM('mon')">+ Add stop</button>
-      </div>
-    </div>
-    <div style="display:flex;align-items:center;gap:1.2rem;margin-top:1rem">
-      <button class="reset-btn" onclick="resetItin()">↺ Reset to default</button>
-      <button class="reset-btn" onclick="printItin()" style="color:var(--ink);font-weight:600">🖨 Print itinerary</button>
-    </div>
-
-    <!-- MAP -->
-    <div style="margin-top:3rem">
-      <div class="map-toolbar">
-        <div class="map-toolbar-title">ROUTE MAP</div>
-        <div style="display:flex;gap:.5rem;flex-wrap:wrap">
-          <a id="gmapsLink" class="map-btn primary" href="#" target="_blank">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
-            Open in Google Maps
-          </a>
-          <button class="map-btn" onclick="refreshMap()">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
-            Refresh Map
-          </button>
-        </div>
-      </div>
-      <div class="map-day-tabs" id="mapDayTabs">
-        <button class="map-day-tab active" data-mday="all" onclick="setMapDay('all',this)">All Days</button>
-        <button class="map-day-tab" data-mday="thu" onclick="setMapDay('thu',this)">Thu May 21</button>
-        <button class="map-day-tab" data-mday="fri" onclick="setMapDay('fri',this)">Fri May 22</button>
-        <button class="map-day-tab" data-mday="sat" onclick="setMapDay('sat',this)">Sat May 23</button>
-        <button class="map-day-tab" data-mday="sun" onclick="setMapDay('sun',this)">Sun May 24</button>
-        <button class="map-day-tab" data-mday="mon" onclick="setMapDay('mon',this)">Mon May 25</button>
-      </div>
-      <div id="itin-map" class="map-wrap">
-        <div class="map-loader" id="mapLoader"><div class="map-spinner"></div><div class="map-loader-text">Building route...</div></div>
-        <iframe id="mapFrame" class="map-canvas" style="border:0" loading="lazy" allowfullscreen referrerpolicy="no-referrer-when-downgrade" src="about:blank" onload="document.getElementById('mapLoader').classList.add('hidden')"></iframe>
-      </div>
-      <div class="map-legend" id="mapLegend"></div>
-    </div>
-  </div>
-  <footer><div class="footer-logo">OREGON TRIP</div><div>May 21–25 · 2025 · Tigard & Portland, Oregon</div></footer>
-</div>
-
-<!-- PAGE: PACK -->
-<div id="page-pack" class="page">
-  <div class="wrap">
-    <div class="sec-label">Before you go</div>
-    <div class="sec-title">PACKING <em>List</em></div>
-    <div class="cl-prog"><div class="cl-prog-label" style="display:flex;justify-content:space-between;align-items:center"><span id="pt">0 of 19 items ready</span><span id="pct" style="font-size:.7rem;font-weight:600;color:var(--ink);opacity:.5">0%</span></div><div class="cl-bar"><div class="cl-fill" id="pb"></div></div></div>
-    <div id="clConfetti" style="display:none;text-align:center;padding:1.5rem;font-size:.9rem;color:var(--sage);font-weight:500;letter-spacing:.04em">🎉 All packed and ready to go!</div>
-    <div class="cl-grid">
-      <div class="cl-group"><h4>🌧 Oregon Weather</h4><div class="cl-item"><input type="checkbox" id="c1"><label for="c1">Rain jacket — non-negotiable in Oregon</label></div><div class="cl-item"><input type="checkbox" id="c2"><label for="c2">Comfortable walking shoes</label></div><div class="cl-item"><input type="checkbox" id="c3"><label for="c3">Layers for cool evenings</label></div><div class="cl-item"><input type="checkbox" id="c4"><label for="c4">Compact umbrella</label></div><div class="cl-item"><input type="checkbox" id="c5"><label for="c5">Sunscreen (May sun is deceptive)</label></div></div>
-      <div class="cl-group"><h4>📱 Tech & Gear</h4><div class="cl-item"><input type="checkbox" id="c6"><label for="c6">Portable charger / power bank</label></div><div class="cl-item"><input type="checkbox" id="c7"><label for="c7">Phone car mount for navigation</label></div><div class="cl-item"><input type="checkbox" id="c8"><label for="c8">Camera / extra memory card</label></div><div class="cl-item"><input type="checkbox" id="c9"><label for="c9">Earbuds / headphones</label></div><div class="cl-item"><input type="checkbox" id="c10"><label for="c10">USB-C / Lightning cables</label></div></div>
-      <div class="cl-group"><h4>🌿 Outdoor Ready</h4><div class="cl-item"><input type="checkbox" id="c11"><label for="c11">Light daypack / tote bag</label></div><div class="cl-item"><input type="checkbox" id="c12"><label for="c12">Reusable water bottle</label></div><div class="cl-item"><input type="checkbox" id="c13"><label for="c13">Snacks for wine country / beach drive</label></div><div class="cl-item"><input type="checkbox" id="c14"><label for="c14">Bug repellent</label></div><div class="cl-item"><input type="checkbox" id="c15"><label for="c15">Waterproof hiking shoes (Forest Park)</label></div></div>
-      <div class="cl-group"><h4>🍷 Pre-Trip Bookings</h4><div class="cl-item"><input type="checkbox" id="c16"><label for="c16">Japanese Garden tickets pre-booked</label></div><div class="cl-item"><input type="checkbox" id="c17"><label for="c17">Winery reservations confirmed</label></div><div class="cl-item"><input type="checkbox" id="c18"><label for="c18">Dinner cruise reservation made</label></div><div class="cl-item"><input type="checkbox" id="c19"><label for="c19">Columbia Gorge pass purchased</label></div></div>
-    </div>
-  </div>
-  <footer><div class="footer-logo">OREGON TRIP</div><div>May 21–25 · 2025 · Tigard & Portland, Oregon</div></footer>
-</div>
-
-<!-- MODAL -->
-<div class="overlay" id="overlay" onclick="closeBg(event)">
-  <div class="modal">
-    <h3>Add a Stop</h3>
-    <input type="text" id="mT" placeholder="Title (e.g. 🎶 Jazz club)" maxlength="50">
-    <input type="text" id="mS" placeholder="Details (e.g. Goose Hollow · $20)" maxlength="80">
-    <input type="text" id="mC" placeholder="Time (e.g. 🌙 Evening)" maxlength="30">
-    <div class="m-actions">
-      <button class="m-cancel" onclick="closeM()">Cancel</button>
-      <button class="m-save" onclick="saveS()">Add Stop</button>
-    </div>
-  </div>
-</div>
-
-<!-- DROP STRIP -->
-<div class="drop-strip" id="dropStrip">
-  <div class="drop-strip-label">Drop into →</div>
-  <div class="drop-zone" data-day="thu" ondragover="dzOver(event,this)" ondragleave="dzLeave(this)" ondrop="dzDrop(event,this)">Thu May 21</div>
-  <div class="drop-zone" data-day="fri" ondragover="dzOver(event,this)" ondragleave="dzLeave(this)" ondrop="dzDrop(event,this)">Fri May 22</div>
-  <div class="drop-zone" data-day="sat" ondragover="dzOver(event,this)" ondragleave="dzLeave(this)" ondrop="dzDrop(event,this)">Sat May 23</div>
-  <div class="drop-zone" data-day="sun" ondragover="dzOver(event,this)" ondragleave="dzLeave(this)" ondrop="dzDrop(event,this)">Sun May 24</div>
-  <div class="drop-zone" data-day="mon" ondragover="dzOver(event,this)" ondragleave="dzLeave(this)" ondrop="dzDrop(event,this)">Mon May 25</div>
-</div>
-<div class="toast" id="toast"></div>
+<footer>
+  <p>Oregon Trip • Built for speed • oregon-trip-itin-v4</p>
+</footer>
 
 <script>
-// PAGE NAVIGATION
-const visitedPages=new Set(['home']);
-function showPage(id){
-  document.querySelectorAll('.page').forEach(p=>{p.classList.remove('active');p.classList.remove('animating');});
-  const pg=document.getElementById('page-'+id);
-  pg.classList.add('active');
-  if(!visitedPages.has(id)){pg.classList.add('animating');visitedPages.add(id);}
-  document.querySelectorAll('.nav-links a').forEach(a=>a.classList.remove('active'));
-  const l=document.querySelector('.nav-links a[data-page="'+id+'"]');
-  if(l)l.classList.add('active');
-  window.scrollTo({top:0,behavior:'instant'});
-  if(id==='itinerary') setTimeout(refreshMap,300);
-  if(id==='explore') syncFilterButtons();
-}
-
-// FIX 4 — FILTERS with active count + Clear All
-let AF={time:'all',cat:'all',dist:'all',cuisine:'all'};
-function filt(g,v,btn){
-  AF[g]=v;
-  document.querySelectorAll('.fp[data-g="'+g+'"]').forEach(b=>b.classList.remove('on'));
-  btn.classList.add('on');
-  runFilters();
-}
-function clearAllFilters(){
-  AF={time:'all',cat:'all',dist:'all',cuisine:'all'};
-  document.querySelectorAll('.fp').forEach(b=>b.classList.toggle('on',b.dataset.v==='all'));
-  runFilters();
-}
-function runFilters(){
-  let vis=0;
-  document.querySelectorAll('.card').forEach(c=>{
-    const cuisine=c.dataset.cuisine||'';
-    const ok=(AF.time==='all'||c.dataset.time.includes(AF.time))
-           &&(AF.cat==='all'||c.dataset.cat.includes(AF.cat))
-           &&(AF.dist==='all'||c.dataset.dist===AF.dist)
-           &&(AF.cuisine==='all'||cuisine.includes(AF.cuisine));
-    c.classList.toggle('hidden',!ok);
-    if(ok)vis++;
-  });
-  document.getElementById('noR').style.display=vis?'none':'block';
-  const active=['time','cat','dist','cuisine'].filter(k=>AF[k]!=='all').length;
-  const statusEl=document.getElementById('filterStatus');
-  const countEl=document.getElementById('filterCount');
-  if(active>0){
-    statusEl.style.display='flex';
-    countEl.textContent=vis+' result'+(vis!==1?'s':'')+' · '+active+' filter'+(active!==1?'s':'')+' active';
-  } else {
-    statusEl.style.display='none';
+const ATTRACTIONS = [
+  {
+    title:"Portland Japanese Garden",
+    desc:"Beautiful Japanese garden with incredible views."
+  },
+  {
+    title:"Lan Su Chinese Garden",
+    desc:"Peaceful downtown Chinese garden."
+  },
+  {
+    title:"Powell’s City of Books",
+    desc:"One of the largest bookstores in the world."
+  },
+  {
+    title:"Multnomah Falls",
+    desc:"Iconic Oregon waterfall."
+  },
+  {
+    title:"Vista House",
+    desc:"Amazing Columbia Gorge viewpoints."
+  },
+  {
+    title:"Cannon Beach",
+    desc:"Classic Oregon coast destination."
+  },
+  {
+    title:"Haystack Rock",
+    desc:"Famous beach landmark."
+  },
+  {
+    title:"Ecola State Park",
+    desc:"Coastal hiking and ocean views."
+  },
+  {
+    title:"OMSI",
+    desc:"Interactive science museum."
   }
-}
+];
 
-// FIX 12 — Sync filter button visual state to AF when returning to Explore
-function syncFilterButtons(){
-  ['time','cat','dist','cuisine'].forEach(g=>{
-    document.querySelectorAll('.fp[data-g="'+g+'"]').forEach(b=>{
-      b.classList.toggle('on', b.dataset.v===AF[g]);
-    });
-  });
-  runFilters();
-}
+const cards = document.getElementById("cards");
+const searchBox = document.getElementById("searchBox");
 
-// IMAGE FALLBACKS
-const FB={
-  'Japanese Garden':'https://images.unsplash.com/photo-1614091369078-8a1ade08b99a?auto=format&fit=crop&w=700&q=80',
-  'OMSI':'https://images.unsplash.com/photo-1532094349884-543559059a5e?auto=format&fit=crop&w=700&q=80',
-  'Pittock Mansion':'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=700&q=80',
-  'Lan Su Garden':'https://images.unsplash.com/photo-1526481280693-3bfa7568e0f3?auto=format&fit=crop&w=700&q=80',
-  'Dinner Cruise':'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=700&q=80',
-  'Willamette Valley':'https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?auto=format&fit=crop&w=700&q=80',
-  'Portland food carts':'https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=700&q=80'
-};
-document.querySelectorAll('.card-img img').forEach(img=>{
-  img.addEventListener('error',function(){const f=FB[this.alt];if(f&&this.src!==f)this.src=f;});
-});
-
-// FIX 3 — DAY PICKER smart flip above/below viewport
-function toggleDayPicker(btn){
-  const picker=btn.nextElementSibling;
-  const isOpen=picker.classList.contains('open');
-  document.querySelectorAll('.day-picker.open').forEach(p=>p.classList.remove('open'));
-  if(!isOpen){
-    picker.classList.add('open');
-    const btnRect=btn.getBoundingClientRect();
-    if(btnRect.top<220){
-      picker.style.bottom='auto';
-      picker.style.top='calc(100% + 6px)';
-    } else {
-      picker.style.top='auto';
-      picker.style.bottom='calc(100% + 6px)';
-    }
-  }
-}
-document.addEventListener('click',e=>{
-  if(!e.target.closest('.card-add-btn')&&!e.target.closest('.day-picker')){
-    document.querySelectorAll('.day-picker.open').forEach(p=>p.classList.remove('open'));
-  }
-});
-function addFromCard(itemBtn,day){
-  const card=itemBtn.closest('.card');
-  const title=card.dataset.title||card.querySelector('h3').textContent;
-  const sub=card.dataset.sub||'';
-  addItinCard(day,title,sub);
-  itemBtn.closest('.day-picker').classList.remove('open');
-  const addBtn=itemBtn.closest('.card-links-row')?.querySelector('.card-add-btn')
-             ||itemBtn.closest('[style]')?.querySelector('.card-add-btn');
-  if(addBtn){
-    addBtn.textContent='✓ Added';addBtn.classList.add('added');
-    setTimeout(()=>{addBtn.textContent='+ Add to Itinerary';addBtn.classList.remove('added');},2000);
-  }
-  showToast('"'+title+'" → '+itemBtn.textContent,true);
-  refreshMap();
-}
-
-// PERSISTENCE
-const STORAGE_KEY='oregon-trip-itin-v3';
-const CHECKLIST_KEY='oregon-trip-checklist-v1';
-const DEF=document.getElementById('itinCols').innerHTML;
-function readItinerary(){
-  const data={};
-  document.querySelectorAll('.day-col').forEach(col=>{
-    data[col.dataset.day]=[];
-    col.querySelectorAll('.ic:not(.ph)').forEach(card=>{
-      data[col.dataset.day].push({
-        title:card.querySelector('.ic-title')?.textContent||'',
-        sub:card.querySelector('.ic-sub')?.textContent||'',
-        chip:card.querySelector('.ic-chip')?.textContent||''
-      });
-    });
-  });
-  return data;
-}
-function writeItinerary(data){
-  document.querySelectorAll('.day-col').forEach(col=>{
-    const addBtn=col.querySelector('.add-btn');
-    col.querySelectorAll('.ic').forEach(c=>c.remove());
-    (data[col.dataset.day]||[]).forEach(item=>{
-      col.insertBefore(buildCard(item.title,item.sub,item.chip),addBtn);
-    });
-  });
-  updateEmptyStates();
-}
-function saveItinerary(){
-  try{localStorage.setItem(STORAGE_KEY,JSON.stringify(readItinerary()));}catch(e){}
-  refreshMap();
-  updateEmptyStates();
-}
-function loadItinerary(){
-  try{const r=localStorage.getItem(STORAGE_KEY);if(r)writeItinerary(JSON.parse(r));}catch(e){}
-}
-function saveChecklist(){
-  try{
-    const s={};
-    document.querySelectorAll('.cl-item input').forEach(cb=>{s[cb.id]=cb.checked;});
-    localStorage.setItem(CHECKLIST_KEY,JSON.stringify(s));
-  }catch(e){}
-}
-function loadChecklist(){
-  try{
-    const r=localStorage.getItem(CHECKLIST_KEY);if(!r)return;
-    const s=JSON.parse(r);
-    document.querySelectorAll('.cl-item input').forEach(cb=>{
-      if(s[cb.id]!==undefined){cb.checked=s[cb.id];cb.closest('.cl-item').classList.toggle('done',cb.checked);}
-    });
-    upP();
-  }catch(e){}
-}
-
-// BUILD CARD
-function buildCard(title,sub,chip){
-  const card=document.createElement('div');
-  card.className='ic';card.draggable=true;
-  card.addEventListener('dragstart',onDS);
-  card.addEventListener('touchstart',onTouchStart,{passive:true});
-  card.innerHTML='<button class="ic-remove" onclick="removeIC(this)" title="Remove">×</button><button class="ic-edit" onclick="openEdit(this)" title="Edit">✎</button><span class="dh">⢿</span><div class="ic-title">'+esc(title)+'</div>'+(sub?'<div class="ic-sub">'+esc(sub)+'</div>':'')+(chip?'<span class="ic-chip">'+esc(chip)+'</span>':'');
-  return card;
-}
-function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
-
-// FIX 1 — TOUCH DRAG for mobile
-let touchDragged=null,touchClone=null,touchOffX=0,touchOffY=0;
-function onTouchStart(e){
-  if(e.target.closest('.ic-remove,.ic-edit,.add-btn')) return;
-  const card=e.currentTarget;
-  const touch=e.touches[0];
-  const rect=card.getBoundingClientRect();
-  touchOffX=touch.clientX-rect.left;
-  touchOffY=touch.clientY-rect.top;
-  touchDragged=card;
-  touchClone=card.cloneNode(true);
-  touchClone.style.cssText='position:fixed;top:'+rect.top+'px;left:'+rect.left+'px;width:'+rect.width+'px;opacity:.85;pointer-events:none;z-index:9999;transform:scale(1.02);box-shadow:0 12px 40px rgba(0,0,0,.2);border-radius:9px;transition:none';
-  document.body.appendChild(touchClone);
-  card.style.opacity='.3';
-  document.addEventListener('touchmove',onTouchMove,{passive:false});
-  document.addEventListener('touchend',onTouchEnd);
-}
-function onTouchMove(e){
-  if(!touchDragged) return;
-  e.preventDefault();
-  const touch=e.touches[0];
-  touchClone.style.top=(touch.clientY-touchOffY)+'px';
-  touchClone.style.left=(touch.clientX-touchOffX)+'px';
-  document.querySelectorAll('.day-col').forEach(col=>col.classList.remove('drag-over'));
-  const el=document.elementFromPoint(touch.clientX,touch.clientY);
-  const col=el?.closest('.day-col');
-  if(col) col.classList.add('drag-over');
-}
-function onTouchEnd(e){
-  if(!touchDragged){
-    document.removeEventListener('touchmove',onTouchMove);
-    document.removeEventListener('touchend',onTouchEnd);
-    return;
-  }
-  const touch=e.changedTouches[0];
-  const el=document.elementFromPoint(touch.clientX,touch.clientY);
-  const targetCol=el?.closest('.day-col');
-  const targetCard=el?.closest('.ic');
-  if(targetCol){
-    const addBtn=targetCol.querySelector('.add-btn');
-    if(targetCard&&targetCard!==touchDragged&&targetCard.parentNode===targetCol){
-      targetCol.insertBefore(touchDragged,targetCard);
-    } else {
-      targetCol.insertBefore(touchDragged,addBtn);
-    }
-  }
-  touchDragged.style.opacity='';
-  if(touchClone) touchClone.remove();
-  touchClone=null;touchDragged=null;
-  document.querySelectorAll('.day-col').forEach(c=>c.classList.remove('drag-over'));
-  document.removeEventListener('touchmove',onTouchMove);
-  document.removeEventListener('touchend',onTouchEnd);
-  saveItinerary();
-}
-function attachTouchHandlers(){
-  document.querySelectorAll('#itinCols .ic').forEach(card=>{
-    card.removeEventListener('touchstart',onTouchStart);
-    card.addEventListener('touchstart',onTouchStart,{passive:true});
-  });
-}
-
-// MOUSE DRAG SYSTEM
-let dragged=null,ph=null,dragType=null;
-function onDS(e){dragged=e.currentTarget;dragType='itin';dragged.classList.add('dragging');e.dataTransfer.effectAllowed='move';}
-document.querySelectorAll('.card-drag-handle').forEach(handle=>{
-  handle.addEventListener('mousedown',()=>handle.closest('.card').draggable=true);
-  handle.addEventListener('dragstart',(e)=>{
-    dragged=handle.closest('.card');dragType='card';
-    dragged.classList.add('card-dragging');e.dataTransfer.effectAllowed='copy';
-    document.getElementById('dropStrip').classList.add('active');
-  });
-});
-document.querySelectorAll('.card').forEach(card=>{
-  card.addEventListener('dragstart',(e)=>{if(dragType!=='card')e.preventDefault();});
-  card.addEventListener('dragend',()=>card.draggable=false);
-});
-document.addEventListener('dragend',()=>{
-  if(dragType==='itin'){if(dragged)dragged.classList.remove('dragging');if(ph&&ph.parentNode)ph.parentNode.removeChild(ph);saveItinerary();}
-  else if(dragType==='card'){if(dragged)dragged.classList.remove('card-dragging');document.getElementById('dropStrip').classList.remove('active');document.querySelectorAll('.drop-zone').forEach(z=>z.classList.remove('dz-over'));}
-  dragged=null;ph=null;dragType=null;
-  document.querySelectorAll('.day-col').forEach(c=>c.classList.remove('drag-over'));
-});
-function onDO(e){
-  if(dragType!=='itin')return;
-  e.preventDefault();const col=e.currentTarget;col.classList.add('drag-over');
-  if(!ph){ph=document.createElement('div');ph.className='ic ph';}
-  col.insertBefore(ph,getAfter(col,e.clientY)||col.querySelector('.add-btn'));
-}
-function onDL(e){if(!e.currentTarget.contains(e.relatedTarget))e.currentTarget.classList.remove('drag-over');}
-function onDrop(e,col){
-  if(dragType!=='itin')return;
-  e.preventDefault();col.classList.remove('drag-over');
-  if(dragged&&dragged!==ph)col.insertBefore(dragged,ph&&ph.parentNode===col?ph:col.querySelector('.add-btn'));
-  if(ph&&ph.parentNode)ph.parentNode.removeChild(ph);ph=null;
-}
-function getAfter(col,y){
-  return [...col.querySelectorAll('.ic:not(.dragging):not(.ph)')].reduce((c,el)=>{
-    const o=y-el.getBoundingClientRect().top-el.getBoundingClientRect().height/2;
-    return o<0&&o>c.offset?{offset:o,element:el}:c;
-  },{offset:Number.NEGATIVE_INFINITY}).element;
-}
-function dzOver(e,z){if(dragType!=='card')return;e.preventDefault();z.classList.add('dz-over');}
-function dzLeave(z){z.classList.remove('dz-over');}
-function dzDrop(e,z){
-  e.preventDefault();if(dragType!=='card'||!dragged)return;
-  z.classList.remove('dz-over');
-  const day=z.dataset.day;
-  const title=dragged.dataset.title||dragged.querySelector('h3').textContent;
-  const sub=dragged.dataset.sub||'';
-  addItinCard(day,title,sub);
-  document.getElementById('dropStrip').classList.remove('active');
-  showToast('"'+title+'" added to '+z.textContent.trim(),true);
-}
-
-// ADD / REMOVE
-function addItinCard(day,title,sub,chip){
-  const col=document.querySelector('.day-col[data-day="'+day+'"]');if(!col)return;
-  const card=buildCard(title,sub||'',chip||'');
-  col.insertBefore(card,col.querySelector('.add-btn'));
-  saveItinerary();
-}
-function removeIC(btn){
-  const card=btn.closest('.ic');
-  card.style.transition='opacity .2s,transform .2s';card.style.opacity='0';card.style.transform='scale(.95)';
-  setTimeout(()=>{card.remove();saveItinerary();},200);
-}
-
-// FIX 7 — EDIT MODAL with Escape + focus trap
-let editTarget=null;
-function openEdit(btn){
-  editTarget=btn.closest('.ic');
-  document.getElementById('eT').value=editTarget.querySelector('.ic-title')?.textContent||'';
-  document.getElementById('eS').value=editTarget.querySelector('.ic-sub')?.textContent||'';
-  document.getElementById('eC').value=editTarget.querySelector('.ic-chip')?.textContent||'';
-  document.getElementById('editOverlay').classList.add('open');
-  setTimeout(()=>document.getElementById('eT').focus(),50);
-}
-function closeEdit(){document.getElementById('editOverlay').classList.remove('open');editTarget=null;}
-function closeBgEdit(e){if(e.target===document.getElementById('editOverlay'))closeEdit();}
-function saveEdit(){
-  if(!editTarget)return;
-  const t=document.getElementById('eT').value.trim();if(!t)return;
-  const s=document.getElementById('eS').value.trim();
-  const c=document.getElementById('eC').value.trim();
-  const rmBtn=editTarget.querySelector('.ic-remove');
-  const edBtn=editTarget.querySelector('.ic-edit');
-  const dh=editTarget.querySelector('.dh');
-  editTarget.innerHTML='';
-  editTarget.appendChild(rmBtn);editTarget.appendChild(edBtn);editTarget.appendChild(dh);
-  const tEl=document.createElement('div');tEl.className='ic-title';tEl.textContent=t;editTarget.appendChild(tEl);
-  if(s){const sEl=document.createElement('div');sEl.className='ic-sub';sEl.textContent=s;editTarget.appendChild(sEl);}
-  if(c){const cEl=document.createElement('span');cEl.className='ic-chip';cEl.textContent=c;editTarget.appendChild(cEl);}
-  saveItinerary();closeEdit();showToast('Stop updated ✓');
-}
-
-// ADD STOP MODAL
-let tDay=null;
-function openM(d){
-  tDay=d;
-  document.getElementById('overlay').classList.add('open');
-  setTimeout(()=>document.getElementById('mT').focus(),50);
-}
-function closeM(){document.getElementById('overlay').classList.remove('open');['mT','mS','mC'].forEach(id=>document.getElementById(id).value='');}
-function closeBg(e){if(e.target===document.getElementById('overlay'))closeM();}
-function saveS(){
-  const t=document.getElementById('mT').value.trim();if(!t)return;
-  addItinCard(tDay,t,document.getElementById('mS').value.trim(),document.getElementById('mC').value.trim());closeM();
-}
-
-// FIX 7 — Global Escape, Enter, Tab trap
-document.addEventListener('keydown',function(e){
-  if(e.key==='Escape'){
-    if(document.getElementById('editOverlay').classList.contains('open')) closeEdit();
-    if(document.getElementById('overlay').classList.contains('open')) closeM();
-    document.querySelectorAll('.day-picker.open').forEach(p=>p.classList.remove('open'));
-  }
-  if(e.key==='Enter'){
-    if(document.getElementById('editOverlay').classList.contains('open')&&document.activeElement&&document.activeElement.closest('#editOverlay')) saveEdit();
-    if(document.getElementById('overlay').classList.contains('open')&&document.activeElement&&document.activeElement.closest('#overlay')) saveS();
-  }
-  if(e.key==='Tab'){
-    const openModal=document.querySelector('.overlay.open .modal');
-    if(!openModal) return;
-    const focusable=[...openModal.querySelectorAll('input,button,textarea')].filter(el=>!el.disabled);
-    if(!focusable.length) return;
-    const first=focusable[0],last=focusable[focusable.length-1];
-    if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}
-    else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}
-  }
-});
-
-// RESET
-function resetItin(){
-  if(confirm('Reset itinerary to default? This will clear all your changes.')){
-    try{localStorage.removeItem(STORAGE_KEY);}catch(e){}
-    document.getElementById('itinCols').innerHTML=DEF;
-    document.querySelectorAll('#itinCols .ic').forEach(c=>{
-      c.addEventListener('dragstart',onDS);
-      c.addEventListener('touchstart',onTouchStart,{passive:true});
-    });
-    refreshMap();
-    updateEmptyStates();
-    showToast('Itinerary reset to default');
-  }
-}
-
-// TOAST with optional View Plan link
-let toastTimer=null;
-function showToast(msg,showPlanLink){
-  const t=document.getElementById('toast');
-  t.innerHTML='';
-  const txt=document.createTextNode(msg+' ');
-  t.appendChild(txt);
-  if(showPlanLink){
-    const btn=document.createElement('button');
-    btn.textContent='View Plan →';
-    btn.setAttribute('style','background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);color:#fff;font-size:.72rem;font-weight:600;padding:.2rem .6rem;border-radius:999px;cursor:pointer;font-family:DM Sans,sans-serif;margin-left:.3rem');
-    btn.onclick=function(){showPage('itinerary');};
-    t.appendChild(btn);
-  }
-  t.classList.add('show');
-  clearTimeout(toastTimer);
-  toastTimer=setTimeout(()=>t.classList.remove('show'),3000);
-}
-
-// FIX 6 — CHECKLIST with % label + completion state
-const TOT=19;
-function upP(){
-  const n=document.querySelectorAll('.cl-item input:checked').length;
-  const pct=Math.round(n/TOT*100);
-  document.getElementById('pb').style.width=pct+'%';
-  document.getElementById('pt').textContent=n+' of '+TOT+' items ready';
-  const pctEl=document.getElementById('pct');
-  if(pctEl) pctEl.textContent=pct+'%';
-  const confetti=document.getElementById('clConfetti');
-  if(confetti){
-    if(n===TOT){
-      confetti.style.display='block';
-      document.getElementById('pb').style.background='#1a5c35';
-    } else {
-      confetti.style.display='none';
-      document.getElementById('pb').style.background='';
-    }
-  }
-}
-document.querySelectorAll('.cl-item input').forEach(cb=>{
-  cb.addEventListener('change',function(){
-    this.closest('.cl-item').classList.toggle('done',this.checked);
-    upP();saveChecklist();
-  });
-});
-document.querySelectorAll('.cl-item').forEach(item=>{
-  item.addEventListener('click',e=>{
-    if(e.target.tagName==='INPUT'||e.target.tagName==='LABEL') return;
-    const cb=item.querySelector('input');
-    cb.checked=!cb.checked;cb.dispatchEvent(new Event('change'));
-  });
-});
-
-// MAP
-const LOCATION_DB={
-  '28th Parallel':'2810 NE Glisan St, Portland, OR',
-  'Ala Carts':'10175 SE Stark St, Portland, OR',
-  'Prost Marketplace':'4233 N Mississippi Ave, Portland, OR',
-  'Mississippi Marketplace':'4237 N Mississippi Ave, Portland, OR',
-  'Midtown Beer Garden':'SW 5th Ave & SW Washington St, Portland, OR',
-  'Arrive':'Portland International Airport, Portland, OR',
-  'PDX':'Portland International Airport, Portland, OR',
-  'Check In':'14726 SW Catalina Drive, Tigard, OR',
-  'Tigard':'14726 SW Catalina Drive, Tigard, OR',
-  'Mirror Lake':'Mirror Lake Trailhead, Government Camp, OR',
-  'Rose Garden':'International Rose Test Garden, Washington Park, Portland, OR',
-  'Japanese Garden':'Portland Japanese Garden, Washington Park, Portland, OR',
-  'Columbia River Gorge':'Columbia River Gorge, Dog Mountain Trailhead, WA',
-  'Gorge':'Vista House Crown Point, Corbett, OR',
-  'Kayak':'Alder Creek Kayak Canoe, 1515 SE Water Ave, Portland, OR',
-  'Alberta Arts':'NE Alberta St, Portland, OR',
-  "Powell's":'Powell's City of Books, 1005 W Burnside St, Portland, OR',
-  'Food Cart':'Cartopia, SE 12th Ave & Hawthorne Blvd, Portland, OR',
-  'Salt & Straw':'Salt & Straw, 838 NW 23rd Ave, Portland, OR',
-  'Reality':'Portland International Airport, Portland, OR',
-  'Brunch':'Tasty n Daughters, 3808 N Williams Ave, Portland, OR',
-  "Pip's":'Pip's Original Doughnuts, 4759 NE Fremont St, Portland, OR',
-  'Voodoo':'Voodoo Doughnut, 22 SW 3rd Ave, Portland, OR',
-  'Return Car':'Portland International Airport, Portland, OR',
-  'OMSI':'OMSI, 1945 SE Water Ave, Portland, OR',
-  'Dinner Cruise':'Tom McCall Waterfront Park, Portland, OR',
-  'Lan Su':'Lan Su Chinese Garden, 239 NW Everett St, Portland, OR',
-  'Pittock':'Pittock Mansion, 3229 NW Pittock Dr, Portland, OR',
-  'Forest Park':'Witch's Castle, NW Upshur St, Portland, OR',
-  'Wine Country':'Dundee Hills, Dundee, OR',
-  'Willamette Valley':'Dundee Hills, Dundee, OR',
-  'Cannon Beach':'Cannon Beach, OR',
-  'Saturday Market':'Portland Saturday Market, 2 SW Naito Pkwy, Portland, OR',
-  'Pearl District':'Pearl District, Portland, OR',
-  'Art Museum':'Portland Art Museum, 1219 SW Park Ave, Portland, OR',
-  'Sunset':'Crown Point State Scenic Corridor, Corbett, OR',
-  'Dinner in':'Nob Hill, NW 23rd Ave, Portland, OR',
-  'Grab Dinner':'Tigard, OR',
-  'Forest Park':'Witch Castle Ruins, NW Upshur St, Portland, OR',
-  'Cartopia':'Cartopia, SE 12th Ave, Portland, OR',
-  'Hinterland':'Hinterland Food Pod, NE Portland, OR',
-  'New Wonderlove':'New Wonderlove Food Pod, Portland, OR',
-  'CORE':'CORE Collective Oregon Eateries, 3612 SE 82nd Ave, Portland, OR',
-  'El Mercado':'El Mercado Portland, SE Foster-Powell, Portland, OR',
-  'Saturday Market':'Portland Saturday Market, 2 SW Naito Pkwy, Portland, OR'
-};
-const DAY_COLORS={thu:'#c0392b',fri:'#2980b9',sat:'#27ae60',sun:'#8e44ad',mon:'#e67e22'};
-let activeMapDay='all';
-function getLocationForCard(title){
-  for(const [k,a] of Object.entries(LOCATION_DB)){
-    if(title.toLowerCase().includes(k.toLowerCase())) return a;
-  }
-  return null;
-}
-function getItinLocations(dayFilter){
-  const locs=[];
-  document.querySelectorAll('.day-col').forEach(col=>{
-    const day=col.dataset.day;
-    if(dayFilter!=='all'&&day!==dayFilter) return;
-    col.querySelectorAll('.ic:not(.ph)').forEach(card=>{
-      const title=card.querySelector('.ic-title')?.textContent||'';
-      const addr=getLocationForCard(title);
-      if(addr) locs.push({title,addr,day,color:DAY_COLORS[day]||'#333'});
-    });
-  });
-  return locs;
-}
-function setMapDay(day,btn){
-  activeMapDay=day;
-  document.querySelectorAll('.map-day-tab').forEach(t=>t.classList.remove('active'));
-  btn.classList.add('active');
-  refreshMap();
-}
-function refreshMap(){
-  if(!document.getElementById('page-itinerary').classList.contains('active')) return;
-  const locs=getItinLocations(activeMapDay);
-  if(!locs.length){
-    document.getElementById('mapFrame').src='about:blank';
-    document.getElementById('mapLegend').innerHTML='<span style="font-size:.78rem;color:var(--mid);font-style:italic">No mapped locations for this day yet.</span>';
-    updateGMapsLink([]);return;
-  }
-  // Provide your own restricted Google Maps API key:
-  // Get one free at console.cloud.google.com → APIs & Services → Credentials
-  // Restrict it to your GitHub Pages domain for safety.
-  const MAPS_KEY = window.MAPS_API_KEY || '';
-  if(MAPS_KEY){
-    const base='https://www.google.com/maps/embed/v1/directions';
-    const origin=encodeURIComponent(locs[0].addr);
-    const dest=encodeURIComponent(locs[locs.length-1].addr);
-    const waypts=locs.slice(1,-1).map(l=>encodeURIComponent(l.addr)).join('|');
-    let src=base+'?key='+MAPS_KEY+'&origin='+origin+'&destination='+dest+'&mode=driving';
-    if(waypts) src+='&waypoints='+waypts;
-    document.getElementById('mapLoader').classList.remove('hidden');
-    document.getElementById('mapFrame').src=src;
-  } else {
-    // Fallback: OpenStreetMap (no API key needed) — centered on Portland
-    document.getElementById('mapLoader').classList.remove('hidden');
-    document.getElementById('mapFrame').src='https://www.openstreetmap.org/export/embed.html?bbox=-122.78%2C45.43%2C-122.55%2C45.60&layer=mapnik&marker=45.5231%2C-122.6765';
-  }
-  const legend=document.getElementById('mapLegend');
-  const days=[...new Set(locs.map(l=>l.day))];
-  const dayNames={thu:'Thursday',fri:'Friday',sat:'Saturday',sun:'Sunday',mon:'Monday'};
-  legend.innerHTML=days.map(d=>'<div class="map-legend-item"><div class="map-legend-dot" style="background:'+DAY_COLORS[d]+'"></div>'+dayNames[d]+'</div>').join('');
-  updateGMapsLink(locs);
-}
-function updateGMapsLink(locs){
-  if(!locs.length){document.getElementById('gmapsLink').href='https://maps.google.com';return;}
-  if(locs.length===1){
-    document.getElementById('gmapsLink').href='https://maps.google.com/?q='+encodeURIComponent(locs[0].addr);
-  } else {
-    const allAddrs=locs.map(l=>encodeURIComponent(l.addr)).join('/');
-    document.getElementById('gmapsLink').href='https://www.google.com/maps/dir/'+allAddrs;
-  }
-}
-
-
-// Update empty column visual state (cross-browser)
-function updateEmptyStates(){
-  document.querySelectorAll('.day-col').forEach(col=>{
-    const hasCards = col.querySelectorAll('.ic:not(.ph)').length > 0;
-    col.classList.toggle('is-empty', !hasCards);
-  });
-}
-// FIX 14 — PRINT ITINERARY
-function printItin(){
-  // Ensure itinerary page is what prints
-  const allPages=document.querySelectorAll('.page');
-  allPages.forEach(p=>p.classList.remove('active'));
-  document.getElementById('page-itinerary').classList.add('active');
-  window.print();
-  // Restore after print dialog closes
-  setTimeout(()=>showPage('itinerary'),500);
-}
-
-// BOOT
-loadItinerary();
-loadChecklist();
-attachTouchHandlers();
-updateEmptyStates();
-setTimeout(refreshMap,400);
-// FIX 13 — Colour card-time badges by time of day
-document.querySelectorAll('.card-time').forEach(badge=>{
-  const t=badge.textContent.toLowerCase();
-  if(t.includes('morning')||t.includes('lunch')) badge.classList.add('ct-morning');
-  else if(t.includes('afternoon')) badge.classList.add('ct-afternoon');
-  else if(t.includes('evening')||t.includes('night')) badge.classList.add('ct-evening');
-  else badge.classList.add('ct-full');
-});
-</script>
-
-<!-- EDIT MODAL -->
-<div class="overlay" id="editOverlay" onclick="closeBgEdit(event)">
-  <div class="modal">
-    <h3>Edit Stop</h3>
-    <input type="text" id="eT" placeholder="Title" maxlength="50">
-    <input type="text" id="eS" placeholder="Details" maxlength="80">
-    <input type="text" id="eC" placeholder="Time tag (e.g. 🌅 Morning)" maxlength="30">
-    <div class="m-actions">
-      <button class="m-cancel" onclick="closeEdit()">Cancel</button>
-      <button class="m-save" onclick="saveEdit()">Save Changes</button>
+function render(data){
+  cards.innerHTML = data.map(item => `
+    <div class="card">
+      <div class="card-content">
+        <h3>${item.title}</h3>
+        <p>${item.desc}</p>
+      </div>
     </div>
-  </div>
-</div>
+  `).join("");
+}
+
+searchBox.addEventListener("input", e=>{
+  const q = e.target.value.toLowerCase();
+
+  const filtered = ATTRACTIONS.filter(item =>
+    item.title.toLowerCase().includes(q) ||
+    item.desc.toLowerCase().includes(q)
+  );
+
+  render(filtered);
+});
+
+render(ATTRACTIONS);
+</script>
 
 </body>
 </html>
